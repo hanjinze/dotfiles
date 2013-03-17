@@ -7,6 +7,9 @@
 # Newsbeuter DB #
 cache.db
 
+# python #
+*.pyc
+
 # misc #
 *.lock
 *.log
