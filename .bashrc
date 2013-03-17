@@ -22,6 +22,7 @@ ANDROID_JAVA_HOME="/etc/java-config-2/current-system-vm"
 export ANDROID_JAVA_HOME
 export TERM='xterm-256color'
 export LANG=en_US.utf8
+export BROWSER=google-chrome
 
 . ~/.vim/bundle/powerline/powerline/bindings/bash/powerline.sh
 #function _update_ps1() {
