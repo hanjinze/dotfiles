@@ -7,8 +7,7 @@ set encoding=utf-8
 let g:Powerline_symbols = 'fancy'
 
 set background=dark
-let g:solarized_termcolors=256
-let g:darkzen_termcolors=256
+let g:darkrobot_termcolors=256
 colorscheme darkrobot
 
 set shiftwidth=4
@@ -24,4 +23,4 @@ set ruler               " Show the cursor position all the time
 set showtabline=2
 set laststatus=2
 
-set guifont=Consolas\ for\ Powerline\ 9
+set guifont=Consolas\ 9
