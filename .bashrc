@@ -10,8 +10,8 @@
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
 if [[ $- != *i* ]] ; then
-	# Shell is non-interactive.  Be done now!
-	return
+    # Shell is non-interactive.  Be done now!
+    return
 fi
 
 
@@ -22,4 +22,10 @@ ANDROID_JAVA_HOME="/etc/java-config-2/current-system-vm"
 export ANDROID_JAVA_HOME
 export TERM='xterm-256color'
 export LANG=en_US.utf8
+
 . ~/.vim/bundle/powerline/powerline/bindings/bash/powerline.sh
+#function _update_ps1() {
+#    export PS1="$(~/dotfiles/powerline-shell/powerline-shell.py $?)"
+#}
+
+#export PROMPT_COMMAND="_update_ps1"
