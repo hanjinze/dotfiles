@@ -6,6 +6,8 @@
 
 # Newsbeuter DB #
 cache.db
+history.cmdline
+history.search
 
 # python #
 *.pyc
