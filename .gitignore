@@ -6,3 +6,6 @@
 
 # Newsbeuter DB #
 cache.db
+
+# misc #
+*.lock
