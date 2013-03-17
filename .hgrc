@@ -1,0 +1,7 @@
+[ui]
+username = Derek Musselmann <derek@disflux.com>
+
+[extensions]
+hgext.convert=
+hgext.mq=
+hgext.churn=
