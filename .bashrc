@@ -19,10 +19,15 @@ fi
 PATH="/opt/android-sdk-update-manager/platform-tools/:~/bin/:$PATH"
 EDITOR="/usr/bin/vim"
 ANDROID_JAVA_HOME="/etc/java-config-2/current-system-vm"
+
 export ANDROID_JAVA_HOME
 export TERM='xterm-256color'
 export LANG=en_US.utf8
 export BROWSER=google-chrome
+
+#tcsh style history completion
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
 
 if [ -n "$SSH_CLIENT" ];
 then PS1="(ssh) \[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
