@@ -10,8 +10,8 @@ let g:nerdtree_tabs_open_on_console_startup=1
 let g:Powerline_symbols = 'fancy'
 
 set background=dark
-let g:wombat256_termcolors=256
-colorscheme wombat256
+let g:wombat_termcolors=256
+colorscheme wombat
 
 set shiftwidth=4
 set softtabstop=4
