@@ -24,9 +24,8 @@ export TERM='xterm-256color'
 export LANG=en_US.utf8
 export BROWSER=google-chrome
 
-. ~/.vim/bundle/powerline/powerline/bindings/bash/powerline.sh
-#function _update_ps1() {
-#    export PS1="$(~/dotfiles/powerline-shell/powerline-shell.py $?)"
-#}
-
-#export PROMPT_COMMAND="_update_ps1"
+if [ -n "$SSH_CLIENT" ];
+then PS1="(ssh) \[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] "
+else
+    . ~/.vim/bundle/powerline/powerline/bindings/bash/powerline.sh
+fi
