@@ -1,14 +1,17 @@
 set expandtab
 execute pathogen#infect()
+
 syntax enable
 filetype plugin indent on
 set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 set encoding=utf-8
+
+let g:nerdtree_tabs_open_on_console_startup=1
 let g:Powerline_symbols = 'fancy'
 
 set background=dark
-let g:darkrobot_termcolors=256
-colorscheme darkrobot
+let g:wombat256_termcolors=256
+colorscheme wombat256
 
 set shiftwidth=4
 set softtabstop=4
@@ -24,3 +27,8 @@ set showtabline=2
 set laststatus=2
 
 set guifont=Consolas\ 9
+
+nmap \e :NERDTreeToggle<CR>
+nmap j gj
+nmap k gk
+
