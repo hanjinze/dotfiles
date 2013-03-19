@@ -1,47 +1,45 @@
-xterm*internalBorder:        0
-xterm*loginShell:         true
-xterm*scrollBar:         false
-xterm*cursorBlink:       false
-xterm*saveLines:         65535
-xterm*dynamicColors:        on
-xterm*highlightSelection: true
+URxvt*internalBorder:        0
+URxvt*loginShell:         true
+URxvt*scrollBar:         false
+URxvt*cursorBlink:       false
+URxvt*saveLines:         65535
+URxvt*dynamicColors:        on
+URxvt*highlightSelection: true
 ! Appearance
-xterm*utf8:                 1
-xterm*eightBitInput: false
-xterm*faceName:     Powerline\ Consolas
-xterm*faceSize:     9
-xterm*boldMode:     false
-xterm*allowBoldFonts:   true
-xterm.letterSpace: -3
-xterm*cursorColor: #DCDCCC
+URxvt*utf8:                 1
+URxvt*eightBitInput: false
+URxvt*face:     "xft:Consolas 9"
+URxvt*boldMode:     false
+URxvt*allowBoldFonts:   true
+URxvt*cursorColor: #DCDCCC
 
 ! tangoesque scheme
-xterm*background:  #262626
-xterm*foreground:  #aaaaaa
+URxvt*background:  #262626
+URxvt*foreground:  #aaaaaa
 ! ! Black
-xterm*color0:      #000000
-xterm*color8:      #555753
+URxvt*color0:      #000000
+URxvt*color8:      #555753
 ! ! Red
-xterm*color1:      #ff6565
-xterm*color9:      #ff8d8d
+URxvt*color1:      #ff6565
+URxvt*color9:      #ff8d8d
 ! ! Green
-xterm*color2:      #93d44f
-xterm*color10:     #c8e7a8
+URxvt*color2:      #93d44f
+URxvt*color10:     #c8e7a8
 ! ! Yellow
-xterm*color3:      #eab93d
-xterm*color11:     #ffc123
+URxvt*color3:      #eab93d
+URxvt*color11:     #ffc123
 ! ! Blue
-xterm*color4:      #204a87
-xterm*color12:     #3465a4
+URxvt*color4:      #204a87
+URxvt*color12:     #3465a4
 ! ! Mangenta
-xterm*color5:      #ce5c00
-xterm*color13:     #f57900
+URxvt*color5:      #ce5c00
+URxvt*color13:     #f57900
 ! ! Cyan 
-xterm*color6:      #89b6e2
-xterm*color14:     #46a4ff
+URxvt*color6:      #89b6e2
+URxvt*color14:     #46a4ff
 ! White
-xterm*color7:      #cccccc
-xterm*color15:     #ffffff
+URxvt*color7:      #cccccc
+URxvt*color15:     #ffffff
  
 ! Solarized color scheme for the X Window System
 ! !
@@ -68,30 +66,30 @@ xterm*color15:     #ffffff
 !#define S_base2         #eee8d5
 !#define S_base3         #fdf6e3
 
-!xterm*background:              S_base03
-!xterm*foreground:              S_base0
+!URxvt*background:              S_base03
+!URxvt*foreground:              S_base0
 !*fading:                  40
 !*fadeColor:               S_base03
 !*cursorColor:             S_base1
 !*pointerColorBackground:  S_base01
 !*pointerColorForeground:  S_base1
 
-!xterm*color0:                  S_base02
-!xterm*color1:                  S_red
-!xterm*color2:                  S_green
-!xterm*color3:                  S_yellow
-!xterm*color4:                  S_blue
-!xterm*color5:                  S_magenta
-!xterm*color6:                  S_cyan
-!xterm*color7:                  S_base2
-!xterm*color9:                  S_orange
-!xterm*color8:                  S_base03
-!xterm*color10:                 S_base01
-!xterm*color11:                 S_base00
-!xterm*color12:                 S_base0
-!xterm*color13:                 S_violet
-!xterm*color14:                 S_base1
-!xterm*color15:                 S_base3
+!URxvt*color0:                  S_base02
+!URxvt*color1:                  S_red
+!URxvt*color2:                  S_green
+!URxvt*color3:                  S_yellow
+!URxvt*color4:                  S_blue
+!URxvt*color5:                  S_magenta
+!URxvt*color6:                  S_cyan
+!URxvt*color7:                  S_base2
+!URxvt*color9:                  S_orange
+!URxvt*color8:                  S_base03
+!URxvt*color10:                 S_base01
+!URxvt*color11:                 S_base00
+!URxvt*color12:                 S_base0
+!URxvt*color13:                 S_violet
+!URxvt*color14:                 S_base1
+!URxvt*color15:                 S_base3
 
 
 Xft.dpi:        96

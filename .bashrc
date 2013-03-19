@@ -17,7 +17,7 @@ fi
 
 # Put your fun stuff here.
 PATH="/opt/android-sdk-update-manager/platform-tools/:~/bin/:$PATH"
-EDITOR="/usr/bin/vim"
+EDITOR="vim"
 ANDROID_JAVA_HOME="/etc/java-config-2/current-system-vm"
 
 export ANDROID_JAVA_HOME
