@@ -24,6 +24,7 @@ export ANDROID_JAVA_HOME
 export TERM='xterm-256color'
 export LANG=en_US.utf8
 export BROWSER=google-chrome
+export XAUTHORITY=$HOME/.Xauthority
 
 #tcsh style history completion
 bind '"\e[A": history-search-backward'
