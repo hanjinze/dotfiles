@@ -8,7 +8,7 @@ URxvt*highlightSelection: true
 ! Appearance
 URxvt*utf8:                 1
 URxvt*eightBitInput: false
-URxvt*face:     "xft:Consolas 9"
+urxvt*font:         xft:monaco:size=9
 URxvt*boldMode:     false
 URxvt*allowBoldFonts:   true
 URxvt*cursorColor: #DCDCCC

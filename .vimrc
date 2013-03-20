@@ -26,7 +26,7 @@ set ruler               " Show the cursor position all the time
 set showtabline=2
 set laststatus=2
 
-set guifont=Powerline\ Consolas\ 9
+set guifont=Consolas\ 9
 
 nmap \e :NERDTreeToggle<CR>
 nmap j gj
