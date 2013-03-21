@@ -1,0 +1,45 @@
+--- dwm.c.orig	2013-03-21 15:18:30.584396441 -0500
++++ dwm.c	2013-03-21 15:27:33.465054482 -0500
+@@ -192,6 +192,7 @@ static long getstate(Window w);
+ static Bool gettextprop(Window w, Atom atom, char *text, unsigned int size);
+ static void grabbuttons(Client *c, Bool focused);
+ static void grabkeys(void);
++static void grid(Monitor *m);
+ static void incnmaster(const Arg *arg);
+ static void initfont(const char *fontstr);
+ static void keypress(XEvent *e);
+@@ -1023,6 +1024,34 @@ grabkeys(void) {
+ }
+ 
+ void
++grid(Monitor *m) {
++	unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
++	Client *c;
++
++	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next))
++		n++;
++
++	/* grid dimensions */
++	for(rows = 0; rows <= n/2; rows++)
++		if(rows*rows >= n)
++			break;
++	cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
++
++	/* window geoms (cell height/width) */
++	ch = m->wh / (rows ? rows : 1);
++	cw = m->ww / (cols ? cols : 1);
++	for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
++		cx = m->wx + (i / rows) * cw;
++		cy = m->wy + (i % rows) * ch;
++		/* adjust height/width of last row/column's windows */
++		ah = ((i + 1) % rows == 0) ? m->wh - ch * rows : 0;
++		aw = (i >= rows * (cols - 1)) ? m->ww - cw * cols : 0;
++		resize(c, cx, cy, cw - 2 * c->bw + aw, ch - 2 * c->bw + ah, False);
++		i++;
++	}
++}
++
++void
+ incnmaster(const Arg *arg) {
+ 	selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);
+ 	arrange(selmon);

@@ -1,0 +1,10 @@
+--- config.def.h.orig	2013-03-21 15:30:33.822941176 -0500
++++ config.def.h	2013-03-21 15:22:40.830458911 -0500
+@@ -36,6 +36,7 @@ static const Layout layouts[] = {
+ 	{ "[]=",      tile },    /* first entry is default */
+ 	{ "><>",      NULL },    /* no layout function means floating behavior */
+ 	{ "[M]",      monocle },
++	{ "[HHH]",    grid },
+ };
+ 
+ /* key definitions */

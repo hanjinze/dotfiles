@@ -3,7 +3,7 @@
 /* appearance */
 static const char font[]            = "-*-gelly-*-*-*-*-*-*-*-*-*-*-*";
 static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
+static const char normbgcolor[]     = "#262626";
 static const char normfgcolor[]     = "#bbbbbb";
 static const char selbordercolor[]  = "#666666";
 static const char selbgcolor[]      = "#666666";
@@ -100,6 +100,8 @@ static Key keys[] = {
         { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
         { 0,                            XK_F11,    spawn,          {.v = playpause } },
         { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
+        { 0,                            0x1008ff13,spawn,          {.v = volup } },
+        { 0,                            0x1008ff11,spawn,          {.v = voldown } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
