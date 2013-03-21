@@ -1,11 +1,11 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
+static const char font[]            = "-*-gelly-*-*-*-*-*-*-*-*-*-*-*";
 static const char normbordercolor[] = "#444444";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#999999";
+static const char selbordercolor[]  = "#666666";
 static const char selbgcolor[]      = "#666666";
 static const char selfgcolor[]      = "#eeeeee";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -36,7 +36,8 @@ static const Bool resizehints = False; /* True means respect size hints in tiled
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+        { "[G]",      grid },
+        { "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
 
@@ -55,10 +56,13 @@ static const Layout layouts[] = {
 static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "/home/derek/src/st/st", NULL };
 static const char *browsercmd[] = { "chrome", NULL };
-static const char *screenshot[] = { "scrot '%Y%m%d-%H%M%S-full.png' -m -e 'mv $f ~/ss'", NULL };
-static const char *windowshot[] = { "import -quality 95 ~/ss/`date +'%Y%m%d-%H%M%S'`-sel.png", NULL };
-static const char *volup[]      = { "mixer vol +2", NULL };
-static const char *voldown[]    = { "mixer vol -2", NULL };
+static const char *screenshot[] = { "scrot", "'%Y%m%d-%H%M%S-full.png'", "-m", "-e", "'mv $f ~/ss'", NULL };
+static const char *windowshot[] = { "import", "-quality", "95", "~/ss/`date +'%Y%m%d-%H%M%S'`-sel.png", NULL };
+static const char *volup[]      = { "mixer", "vol", "+2", NULL };
+static const char *voldown[]    = { "mixer", "vol", "-2", NULL };
+static const char *nexttrack[]   = { "mpc", "next", NULL };
+static const char *prevtrack[]  = { "mpc", "prev", NULL };
+static const char *playpause[]  = { "mpc", "toggle", NULL };
 static const char *editor[]     = { "$EDITOR", NULL };
 static const char *guieditor[]  = { "gvim", NULL };
 
@@ -69,16 +73,18 @@ static Key keys[] = {
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
         { MODKEY|ShiftMask,             XK_b,      togglebottombar,{0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+        { MODKEY|ShiftMask,             XK_j,      zoom,           {0} },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY|ShiftMask,             XK_q,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_q,      killclient,     {0} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, /* tile */
+        { MODKEY,                       XK_g,      setlayout,      {.v = &layouts[1]} }, /* grid */
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} }, /* floating */
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[3]} }, /* monocle */
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
@@ -89,6 +95,9 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
         { MODKEY|ShiftMask,             XK_o,      spawn,          {.v = browsercmd } },
         { MODKEY,                       XK_v,      spawn,          {.v = guieditor } },
+        { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
+        { 0,                            XK_F11,    spawn,          {.v = playpause } },
+        { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
