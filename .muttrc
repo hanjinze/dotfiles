@@ -1,7 +1,7 @@
 #Include server settings
 source ~/.muttsecure
 
-set editor = "vim"
+set editor="/usr/local/bin/vim -c 'set ft=mail et tw=72'"
 
 set folder = "imaps://imap.gmail.com:993"
 set trash = "imaps://imap.gmail.com/[Gmail]/Trash"
@@ -11,8 +11,7 @@ set hostname = gmail.com
 set mail_check = 120
 set timeout = 300
 set imap_keepalive = 300
-set postponed = "+[GMail]/Drafts"
-set record = "+[GMail]/Sent Mail"
+set postponed = "imaps://imap.gmail.com/[GMail]/Drafts"
 set header_cache=~/.mutt/cache/headers
 set message_cachedir=~/.mutt/cache/bodies
 set certificate_file=~/.mutt/certificates
@@ -44,6 +43,7 @@ macro index,pager gi "<change-folder>=INBOX<enter>" "Go to inbox"
 macro index,pager ga "<change-folder>=[Gmail]/All Mail<enter>" "Go to all mail"
 macro index,pager gs "<change-folder>=[Gmail]/Starred<enter>" "Go to starred messages"
 macro index,pager gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
+macro index,pager gl "<change-folder>?" "Go to 'Label'" # will take you to a list of all your Labels (similar to viewing folders).
 
 # color WHERE FOREGROUND BACKGROUND REGEXP
 color hdrdefault color8 default
