@@ -100,7 +100,8 @@ set stylesheet_uri = file://@config_home/uzbl/style.css
 set show_status       = 1
 set status_top        = 0
 set status_background = #303030
-
+set show_gtk_tabs     = 1
+set show_tablist      = 0
 set modcmd_style      = weight="bold" foreground="red"
 set keycmd_style      = weight="light" foreground="red"
 set prompt_style      = foreground="grey"
@@ -148,7 +149,7 @@ set useragent         = Uzbl (Webkit @{WEBKIT_MAJOR}.@{WEBKIT_MINOR}) (@(+uname 
 
 # Set it to certificates store of your distribution, or your own CAfile.
 set ssl_ca_file = /etc/ssl/certs/ca-certificates.crt
-set ssl_verify = 1
+set ssl_verify = 0
 # Command to toggle ssl_verify value:
 @cbind  !ssl = chain 'toggle ssl_verify' 'reload'
 # Example SSL error handler:

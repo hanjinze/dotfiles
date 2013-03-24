@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "Consolas:pixelsize=12:antialias=true:autohint=false";
+static char font[] = "Consolas:pixelsize=11";
 static int borderpx = 1;
 static char shell[] = "/bin/tcsh";
 

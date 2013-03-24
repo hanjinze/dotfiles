@@ -1,0 +1,17 @@
+***************
+*** 1808,1814 ****
+  	if(!c)
+  		return;
+  	grabbuttons(c, False);
+- 	XSetWindowBorder(dpy, c->win, dc.norm[ColBorder]);
+  	if(setfocus)
+  		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+  }
+--- 1777,1783 ----
+  	if(!c)
+  		return;
+  	grabbuttons(c, False);
++ 	XSetWindowBorder(dpy, c->win, dc.norm[ColBorder].pixel);
+  	if(setfocus)
+  		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+  }

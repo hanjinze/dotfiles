@@ -15,14 +15,18 @@ XINERAMALIBS  = -lXinerama
 XINERAMAFLAGS = -DXINERAMA
 
 # includes and libs
-INCS = -I${X11INC}
-LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS}
+INCS = -I${X11INC} \
+	$(shell pkg-config --cflags fontconfig) \
+	$(shell pkg-config --cflags freetype2)
+LIBS = -L/usr/local/lib -lc -L${X11LIB} -lX11 -lutil -lXext -lXft ${XINERAMALIBS} \
+       $(shell pkg-config --libs fontconfig) \
+       $(shell pkg-config --libs freetype2)
 
 # flags
 CPPFLAGS = -D_BSD_SOURCE -D_POSIX_C_SOURCE=2 -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
 #CFLAGS   = -g -std=c99 -pedantic -Wall -O0 ${INCS} ${CPPFLAGS}
 CFLAGS   = -std=c99 -pedantic -Wall -Os ${INCS} ${CPPFLAGS}
-LDFLAGS  = -s ${LIBS}
+LDFLAGS  = -lm -g ${LIBS}
 
 # Solaris
 #CFLAGS = -fast ${INCS} -DVERSION=\"${VERSION}\"

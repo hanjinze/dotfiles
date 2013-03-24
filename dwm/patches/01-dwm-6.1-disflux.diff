@@ -1,5 +1,33 @@
---- dwm.c	2013-03-22 08:49:32.415941962 -0500
-+++ dwm.c.disflux	2013-03-22 08:49:20.684941592 -0500
+--- dwm.c	2013-03-24 12:39:15.444930443 -0500
++++ dwm.c.disflux	2013-03-24 12:39:05.308929442 -0500
+@@ -39,6 +39,7 @@
+ #ifdef XINERAMA
+ #include <X11/extensions/Xinerama.h>
+ #endif /* XINERAMA */
++#include <X11/Xft/Xft.h>
+ 
+ #include "draw.h"
+ #include "util.h"
+@@ -100,16 +101,15 @@
+ 
+ typedef struct {
+ 	int x, y, w, h;
+-	unsigned long norm[ColLast];
+-	unsigned long sel[ColLast];
++	XftColor norm[ColLast];
++	XftColor sel[ColLast];
+ 	Drawable drawable;
+ 	GC gc;
+ 	struct {
+ 		int ascent;
+ 		int descent;
+ 		int height;
+-		XFontSet set;
+-		XFontStruct *xfont;
++		XftFont *xfont;
+ 	} font;
+ } DC; /* draw context */
+ 
 @@ -131,6 +131,7 @@
  	int nmaster;
  	int num;
@@ -23,7 +51,24 @@
  	const Layout *lt[2];
  };
  
-@@ -192,6 +196,7 @@
+@@ -178,20 +182,21 @@
+ static Monitor *dirtomon(int dir);
+ static void drawbar(Monitor *m);
+ static void drawbars(void);
+-static void drawsquare(Bool filled, Bool empty, Bool invert, unsigned long col[ColLast]);
+-static void drawtext(const char *text, unsigned long col[ColLast], Bool invert);
++static void drawsquare(Bool filled, Bool empty, Bool invert, XftColor col[ColLast]);
++static void drawtext(const char *text, XftColor col[ColLast], Bool invert);
+ static void enternotify(XEvent *e);
+ static void expose(XEvent *e);
+ static void focus(Client *c);
+ static void focusin(XEvent *e);
+ static void focusmon(const Arg *arg);
+ static void focusstack(const Arg *arg);
+-static unsigned long getcolor(const char *colstr);
++static XftColor getcolor(const char *colstr);
+ static Bool getrootptr(int *x, int *y);
+ static long getstate(Window w);
  static Bool gettextprop(Window w, Atom atom, char *text, unsigned int size);
  static void grabbuttons(Client *c, Bool focused);
  static void grabkeys(void);
@@ -47,7 +92,18 @@
  static int screen;
  static int sw, sh;           /* X display screen geometry width, height */
  static int bh, blw = 0;      /* bar geometry */
-@@ -515,6 +522,8 @@
+@@ -486,10 +493,6 @@
+ 	for(m = mons; m; m = m->next)
+ 		while(m->stack)
+ 			unmanage(m->stack, False);
+-	if(dc.font.set)
+-		XFreeFontSet(dpy, dc.font.set);
+-	else
+-		XFreeFont(dpy, dc.font.xfont);
+ 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
+ 	XFreePixmap(dpy, dc.drawable);
+ 	XFreeGC(dpy, dc.gc);
+@@ -515,6 +518,8 @@
  	}
  	XUnmapWindow(dpy, mon->barwin);
  	XDestroyWindow(dpy, mon->barwin);
@@ -56,7 +112,7 @@
  	free(mon);
  }
  
-@@ -585,8 +594,10 @@
+@@ -585,8 +590,10 @@
  				XFreePixmap(dpy, dc.drawable);
  			dc.drawable = XCreatePixmap(dpy, root, sw, bh, DefaultDepth(dpy, screen));
  			updatebars();
@@ -68,7 +124,7 @@
  			focus(NULL);
  			arrange(NULL);
  		}
-@@ -657,6 +668,8 @@
+@@ -657,6 +664,8 @@
  	m->nmaster = nmaster;
  	m->showbar = showbar;
  	m->topbar = topbar;
@@ -77,7 +133,16 @@
  	m->lt[0] = &layouts[0];
  	m->lt[1] = &layouts[1 % LENGTH(layouts)];
  	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
-@@ -755,6 +768,15 @@
+@@ -712,7 +721,7 @@
+ drawbar(Monitor *m) {
+ 	int x;
+ 	unsigned int i, occ = 0, urg = 0;
+-	unsigned long *col;
++	XftColor *col;
+ 	Client *c;
+ 
+ 	for(c = m->clients; c; c = c->next) {
+@@ -755,6 +764,15 @@
  			drawtext(NULL, dc.norm, False);
  	}
  	XCopyArea(dpy, dc.drawable, m->barwin, dc.gc, 0, 0, m->ww, bh, 0, 0);
@@ -93,7 +158,81 @@
  	XSync(dpy, False);
  }
  
-@@ -1023,6 +1045,34 @@
+@@ -767,10 +785,10 @@
+ }
+ 
+ void
+-drawsquare(Bool filled, Bool empty, Bool invert, unsigned long col[ColLast]) {
++drawsquare(Bool filled, Bool empty, Bool invert, XftColor col[ColLast]) {
+ 	int x;
+ 
+-	XSetForeground(dpy, dc.gc, col[invert ? ColBG : ColFG]);
++	XSetForeground(dpy, dc.gc, col[invert ? ColBG : ColFG].pixel);
+ 	x = (dc.font.ascent + dc.font.descent + 2) / 4;
+ 	if(filled)
+ 		XFillRectangle(dpy, dc.drawable, dc.gc, dc.x+1, dc.y+1, x+1, x+1);
+@@ -779,11 +797,12 @@
+ }
+ 
+ void
+-drawtext(const char *text, unsigned long col[ColLast], Bool invert) {
++drawtext(const char *text, XftColor col[ColLast], Bool invert) {
+ 	char buf[256];
+ 	int i, x, y, h, len, olen;
++	XftDraw *d;
+ 
+-	XSetForeground(dpy, dc.gc, col[invert ? ColFG : ColBG]);
++	XSetForeground(dpy, dc.gc, col[invert ? ColFG : ColBG].pixel);
+ 	XFillRectangle(dpy, dc.drawable, dc.gc, dc.x, dc.y, dc.w, dc.h);
+ 	if(!text)
+ 		return;
+@@ -798,11 +817,11 @@
+ 	memcpy(buf, text, len);
+ 	if(len < olen)
+ 		for(i = len; i && i > len - 3; buf[--i] = '.');
+-	XSetForeground(dpy, dc.gc, col[invert ? ColBG : ColFG]);
+-	if(dc.font.set)
+-		XmbDrawString(dpy, dc.drawable, dc.font.set, dc.gc, x, y, buf, len);
+-	else
+-		XDrawString(dpy, dc.drawable, dc.gc, x, y, buf, len);
++
++	d = XftDrawCreate(dpy, dc.drawable, DefaultVisual(dpy, screen), DefaultColormap(dpy,screen));
++
++	XftDrawStringUtf8(d, &col[invert ? ColBG : ColFG], dc.font.xfont, x, y, (XftChar8 *) buf, len);
++	XftDrawDestroy(d);
+ }
+ 
+ void
+@@ -848,7 +867,7 @@
+ 		detachstack(c);
+ 		attachstack(c);
+ 		grabbuttons(c, True);
+-		XSetWindowBorder(dpy, c->win, dc.sel[ColBorder]);
++		XSetWindowBorder(dpy, c->win, dc.sel[ColBorder].pixel);
+ 		setfocus(c);
+ 	}
+ 	else {
+@@ -922,14 +941,14 @@
+ 	return atom;
+ }
+ 
+-unsigned long
++XftColor 
+ getcolor(const char *colstr) {
+-	Colormap cmap = DefaultColormap(dpy, screen);
+-	XColor color;
++	XftColor color;
+ 
+-	if(!XAllocNamedColor(dpy, cmap, colstr, &color, &color))
++	if(!XftColorAllocName(dpy, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen), colstr, &color))
+ 		die("error, cannot allocate color '%s'\n", colstr);
+-	return color.pixel;
++
++	return color;
+ }
+ 
+ Bool
+@@ -1023,6 +1042,34 @@
  }
  
  void
@@ -128,7 +267,49 @@
  incnmaster(const Arg *arg) {
  	selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);
  	arrange(selmon);
-@@ -1122,9 +1172,16 @@
+@@ -1030,35 +1077,13 @@
+ 
+ void
+ initfont(const char *fontstr) {
+-	char *def, **missing;
+-	int n;
+ 
+-	dc.font.set = XCreateFontSet(dpy, fontstr, &missing, &n, &def);
+-	if(missing) {
+-		while(n--)
+-			fprintf(stderr, "dwm: missing fontset: %s\n", missing[n]);
+-		XFreeStringList(missing);
+-	}
+-	if(dc.font.set) {
+-		XFontStruct **xfonts;
+-		char **font_names;
+-
+-		dc.font.ascent = dc.font.descent = 0;
+-		XExtentsOfFontSet(dc.font.set);
+-		n = XFontsOfFontSet(dc.font.set, &xfonts, &font_names);
+-		while(n--) {
+-			dc.font.ascent = MAX(dc.font.ascent, (*xfonts)->ascent);
+-			dc.font.descent = MAX(dc.font.descent,(*xfonts)->descent);
+-			xfonts++;
+-		}
+-	}
+-	else {
+-		if(!(dc.font.xfont = XLoadQueryFont(dpy, fontstr))
+-		&& !(dc.font.xfont = XLoadQueryFont(dpy, "fixed")))
+-			die("error, cannot load font: '%s'\n", fontstr);
+-		dc.font.ascent = dc.font.xfont->ascent;
+-		dc.font.descent = dc.font.xfont->descent;
+-	}
++	if(!(dc.font.xfont = XftFontOpenName(dpy,screen,fontstr))
++	&& !(dc.font.xfont = XftFontOpenName(dpy,screen,"fixed")))
++		die("error, cannot load font: '%s'\n", fontstr);
++
++	dc.font.ascent = dc.font.xfont->ascent;
++	dc.font.descent = dc.font.xfont->descent;
+ 	dc.font.height = dc.font.ascent + dc.font.descent;
+ }
+ 
+@@ -1122,9 +1147,16 @@
  		applyrules(c);
  	}
  	/* geometry */
@@ -148,7 +329,42 @@
  	c->h = c->oldh = wa->height;
  	c->oldbw = wa->border_width;
  
-@@ -1745,6 +1802,14 @@
+@@ -1140,7 +1172,7 @@
+ 
+ 	wc.border_width = c->bw;
+ 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
+-	XSetWindowBorder(dpy, w, dc.norm[ColBorder]);
++	XSetWindowBorder(dpy, w, dc.norm[ColBorder].pixel);
+ 	configure(c); /* propagates border_width, if size doesn't change */
+ 	updatewindowtype(c);
+ 	updatesizehints(c);
+@@ -1629,8 +1661,6 @@
+ 	dc.drawable = XCreatePixmap(dpy, root, DisplayWidth(dpy, screen), bh, DefaultDepth(dpy, screen));
+ 	dc.gc = XCreateGC(dpy, root, 0, NULL);
+ 	XSetLineAttributes(dpy, dc.gc, 1, LineSolid, CapButt, JoinMiter);
+-	if(!dc.font.set)
+-		XSetFont(dpy, dc.gc, dc.font.xfont->fid);
+ 	/* init bars */
+ 	updatebars();
+ 	updatestatus();
+@@ -1701,13 +1731,9 @@
+ 
+ int
+ textnw(const char *text, unsigned int len) {
+-	XRectangle r;
+-
+-	if(dc.font.set) {
+-		XmbTextExtents(dc.font.set, text, len, NULL, &r);
+-		return r.width;
+-	}
+-	return XTextWidth(dc.font.xfont, text, len);
++	XGlyphInfo ext;
++	XftTextExtentsUtf8(dpy, dc.font.xfont, (XftChar8 *) text, len, &ext);
++	return ext.xOff;
+ }
+ 
+ void
+@@ -1745,6 +1771,14 @@
  }
  
  void
@@ -163,7 +379,16 @@
  togglefloating(const Arg *arg) {
  	if(!selmon->sel)
  		return;
-@@ -1848,6 +1913,13 @@
+@@ -1787,7 +1821,7 @@
+ 	if(!c)
+ 		return;
+ 	grabbuttons(c, False);
+-	XSetWindowBorder(dpy, c->win, dc.norm[ColBorder]);
++	XSetWindowBorder(dpy, c->win, dc.norm[ColBorder].pixel);
+ 	if(setfocus) {
+ 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
+ 		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+@@ -1848,6 +1882,13 @@
  		                          CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
  		XDefineCursor(dpy, m->barwin, cursor[CurNormal]);
  		XMapRaised(dpy, m->barwin);
@@ -177,7 +402,7 @@
  	}
  }
  
-@@ -1862,6 +1934,12 @@
+@@ -1862,6 +1903,12 @@
  	}
  	else
  		m->by = -bh;
@@ -190,7 +415,7 @@
  }
  
  void
-@@ -2034,8 +2112,39 @@
+@@ -2034,8 +2081,39 @@
  
  void
  updatestatus(void) {

@@ -1,9 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "-*-gelly-*-*-*-*-*-*-*-*-*-*-*";
+static const char font[]            = "Droid Sans Mono:pixelsize=10";
 static const char normbordercolor[] = "#303030";
-static const char normbgcolor[]     = "#262626";
+static const char normbgcolor[]     = "#2C2E2F";
 static const char normfgcolor[]     = "#bbbbbb";
 static const char selbordercolor[]  = "#555555";
 static const char selbgcolor[]      = "#444444";
@@ -30,6 +30,10 @@ static const Rule rules[] = {
         { "feh",      NULL,       NULL,       0,            True,        -1 },
         { "Chrome",   NULL,       NULL,       2,            False,        0 },
         { "Pcmanfm",  NULL,       NULL,       4,            False,        1 },
+        { "Thunar",   NULL,       NULL,       4,            False,        1 },
+        { "Geeqie",   NULL,       NULL,       0,            True,        -1 },
+        { "Viewnior", NULL,       NULL,       0,            True,        -1 },
+        { "Uzbl-tabbed",    NULL,   NULL,     0,            True,         0 },
 };
 
 /* layout(s) */
@@ -106,8 +110,8 @@ static Key keys[] = {
     { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
     { 0,                            XK_F11,    spawn,          {.v = playpause } },
     { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
-    { 0,                            0x1008ff13,spawn,          {.v = volup } },
-    { 0,                            0x1008ff11,spawn,          {.v = voldown } },
+    { 0,                            0x1008ff11,spawn,          {.v = volup } },
+    { 0,                            0x1008ff13,spawn,          {.v = voldown } },
     TAGKEYS(                        XK_1,                      0)
     TAGKEYS(                        XK_2,                      1)
     TAGKEYS(                        XK_3,                      2)
