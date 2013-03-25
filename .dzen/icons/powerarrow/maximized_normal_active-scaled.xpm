@@ -1,0 +1,21 @@
+/* XPM */
+static char *maximized_normal_active_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 1 1 ",
+"  c None",
+/* pixels */
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              "
+};

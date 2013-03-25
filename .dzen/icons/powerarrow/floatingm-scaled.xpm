@@ -1,0 +1,23 @@
+/* XPM */
+static char *floatingm_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 3 1 ",
+"  c #797C74",
+". c #868784",
+"X c None",
+/* pixels */
+"XXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXX",
+" XXXXXXX  XXXX",
+" XXXXXX.X XXXX",
+" X.XXX..X XXXX",
+" X.XX.X.X XXXX",
+" X.X.XX.X XXXX",
+" X.XXXX.X XXXX",
+" X.XXXX.X XXXX",
+" XXXXXXXX XXXX",
+"          XXXX",
+"XXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXX"
+};

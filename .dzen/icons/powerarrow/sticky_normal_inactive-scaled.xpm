@@ -1,0 +1,21 @@
+/* XPM */
+static char *sticky_normal_inactive_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 1 1 ",
+"  c None",
+/* pixels */
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              "
+};

@@ -1,0 +1,31 @@
+/* XPM */
+static char *net_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 11 1 ",
+"  c #C2C2A4",
+". c #C8C8AD",
+"X c #CACAAF",
+"o c #D5D5C0",
+"O c #D9D9C6",
+"+ c #DDDDCC",
+"@ c #DFDFCF",
+"# c #E1E1D2",
+"$ c #E4E4D7",
+"% c #F0F0E8",
+"& c #F2F2EB",
+/* pixels */
+"              ",
+"              ",
+"              ",
+"    o####o    ",
+"   o@OOOO@o   ",
+"   X.$%%$..   ",
+"    $o..o$    ",
+"     .&&.     ",
+"     $..$     ",
+"      oo      ",
+"      @#      ",
+"              ",
+"              ",
+"              "
+};

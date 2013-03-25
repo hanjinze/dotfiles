@@ -9,11 +9,11 @@ static const char selbordercolor[]  = "#555555";
 static const char selbgcolor[]      = "#444444";
 static const char selfgcolor[]      = "#eeeeee";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int snap      = 12;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
-static const Bool showbottombar     = True;
-static const Bool bottombar         = True;
+static const Bool showbottombar     = False;
+static const Bool bottombar         = False;
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -25,7 +25,7 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            True,        -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       False,       -1 },
+	{ "Firefox",  NULL,       NULL,       2,            False,       -1 },
         { "MPlayer",  NULL,       NULL,       0,            True,        -1 },
         { "feh",      NULL,       NULL,       0,            True,        -1 },
         { "Chrome",   NULL,       NULL,       2,            False,        0 },
@@ -63,7 +63,7 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[]   =   { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]    =   { "/home/derek/src/st/st", NULL };
-static const char *browsercmd[] =   { "chrome", NULL };
+static const char *browsercmd[] =   { "firefox", NULL };
 static const char *screenshot[] =   { "/home/derek/bin/screenshot.sh", NULL };
 static const char *windowshot[] =   { "/home/derek/bin/screenshot.sh", "-window", NULL };
 static const char *volup[]      =   { "mixer", "vol", "+2", NULL };

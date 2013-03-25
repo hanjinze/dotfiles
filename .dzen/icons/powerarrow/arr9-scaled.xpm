@@ -1,0 +1,26 @@
+/* XPM */
+static char *arr9_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"9 14 6 1 ",
+"  c #222222",
+". c #232323",
+"X c #292929",
+"o c #2F2F2F",
+"O c #303030",
+"+ c #313131",
+/* pixels */
+"       XO",
+"      XO+",
+"     XOO+",
+"    XOOO+",
+" ..OOOOO+",
+" .XOOOOO+",
+".XO+++O++",
+" XO++++++",
+" .XOOOO++",
+"  .XOOOO+",
+"   .XOOO+",
+"    .XOO+",
+"     .XO+",
+"       XO"
+};

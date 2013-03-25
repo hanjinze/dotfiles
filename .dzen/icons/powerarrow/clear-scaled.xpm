@@ -1,0 +1,21 @@
+/* XPM */
+static char *clear_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 1 1 ",
+"  c None",
+/* pixels */
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              ",
+"              "
+};

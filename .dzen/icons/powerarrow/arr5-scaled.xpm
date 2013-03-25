@@ -1,0 +1,34 @@
+/* XPM */
+static char *arr5_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"9 14 14 1 ",
+"  c #46374C",
+". c #543D4E",
+"X c #4A3A50",
+"o c #4A3B50",
+"O c #4B3B51",
+"+ c #5E424F",
+"@ c #5F4350",
+"# c #654650",
+"$ c #664651",
+"% c #694851",
+"& c #B66C5A",
+"* c #BB6E5A",
+"= c #C4725B",
+"- c #D0785D",
+/* pixels */
+"OOOOOOO.=",
+"OOOOOO+*-",
+"OOOOO#&--",
+"OOOO#&---",
+"OOO#&----",
+"OO#*-----",
+" +=------",
+"O+=------",
+"OX#*-----",
+"OOO%&----",
+"OOOX%&---",
+"OOOXO#&--",
+"OOOOOX+*-",
+"OOOOOOO.="
+};

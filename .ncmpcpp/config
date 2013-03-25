@@ -79,7 +79,7 @@ mpd_music_dir = "/tank/Audio"
 ## (width of column in %)[column's color]{displayed tag}
 ## - color is optional (if you want the default one, type [])
 #
-song_columns_list_format = "(6)[green]{l} (5)[green]{n} (28)[blue]{a} (29)[cyan]{b} (50)[white]{t}"
+song_columns_list_format = "(6)[green]{l} (3)[magenta]{n} (18)[cyan]{a} (25)[cyan]{b} (30)[blue]{t} (10)[blue]{g}(5)[green]{y}"
 #
 ##### various settings #####
 #
@@ -105,7 +105,7 @@ cyclic_scrolling = "yes"
 follow_now_playing_lyrics = "yes"
 #ncmpc_like_songs_adding = "no" (enabled - add/remove, disabled - always add)
 #display_screens_numbers_on_start = "yes"
-#clock_display_seconds = "no"
+clock_display_seconds = "yes"
 # (basic/extended)
 regular_expressions = "extended"
 #

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 #
 # Dzen statusbar, compiled from various sources
 # Requires weather.com key and mocp
@@ -81,7 +81,7 @@ fcpu() {
 # CPU temp   
 ##################################################################
 fcputemp() {
-   print -n $(($(cat /sys/bus/pci/drivers/k8temp/0000\:00\:18.3/temp1_input) / 1000))
+   print -n $(sysctl -n dev.cpu.0.coretemperature)
 }
 ##################################################################
 

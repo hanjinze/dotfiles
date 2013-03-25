@@ -1,0 +1,31 @@
+/* XPM */
+static char *cpu_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 11 1 ",
+"  c #4B696D",
+". c #597478",
+"X c #5D787B",
+"o c #708689",
+"O c #7B8F92",
+"+ c #8B9C9E",
+"@ c #94A3A5",
+"# c #9DAAAC",
+"$ c #A4B0B1",
+"% c #B9C0C1",
+"& c #DDDDDD",
+/* pixels */
+"              ",
+"              ",
+"              ",
+"   o@X++X@o   ",
+"   @$.OO.$@   ",
+"   X.#%%#.X   ",
+"   +O%&&%O+   ",
+"   +O%&&%O+   ",
+"   X.#%%#.X   ",
+"   @$.OO.$@   ",
+"   o@X++X@o   ",
+"              ",
+"              ",
+"              "
+};

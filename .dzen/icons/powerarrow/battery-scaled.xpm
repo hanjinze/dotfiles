@@ -1,0 +1,33 @@
+/* XPM */
+static char *battery_scaled[] = {
+/* columns rows colors chars-per-pixel */
+"14 14 13 1 ",
+"  c #92B0A0",
+". c #A8BFB2",
+"X c #A9C0B4",
+"o c #AFC3B8",
+"O c #B0C4BA",
+"+ c #B5C7BD",
+"@ c #C0CFC7",
+"# c #C3D1C9",
+"$ c #C4D2CB",
+"% c #CCD7D1",
+"& c #D8DFDC",
+"* c #E3E6E4",
+"= c #E8EAE9",
+/* pixels */
+"              ",
+"              ",
+"      OO      ",
+"    o@==@o    ",
+"    %#++#%    ",
+"    %X  X%    ",
+"    %X&&X%    ",
+"    %X**X%    ",
+"    %X**X%    ",
+"    %X$$X%    ",
+"    %%@@%%    ",
+"    .++++.    ",
+"              ",
+"              "
+};
