@@ -1,3 +1,6 @@
+#This is a big patch for dwm 6.1 that adds the following rolled into one big patch:
+# pertag, grid layout, Xft, center float, dual status bars
+
 --- dwm.c	2013-03-25 18:40:27.768930195 -0500
 +++ dwm.c.disflux	2013-03-25 18:40:22.068929281 -0500
 @@ -39,6 +39,7 @@
