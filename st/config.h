@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "MonteCarlo:pixelsize=12";
+static char font[] = "MonteCarlo:pixelsize=13";
 static int borderpx = 1;
 static char shell[] = "/bin/tcsh";
 

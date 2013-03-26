@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "Droid Sans Mono:pixelsize=10";
+static const char font[]            = "Powerline Consolas:pixelsize=10";
 static const char normbordercolor[] = "#303030";
 static const char normbgcolor[]     = "#2C2E2F";
 static const char normfgcolor[]     = "#bbbbbb";
