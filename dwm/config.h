@@ -2,12 +2,12 @@
 
 /* appearance */
 static const char font[]            = "Powerline Consolas:pixelsize=10";
-static const char normbordercolor[] = "#303030";
-static const char normbgcolor[]     = "#2C2E2F";
-static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#555555";
-static const char selbgcolor[]      = "#444444";
-static const char selfgcolor[]      = "#eeeeee";
+static const char normbordercolor[] = "#434443";
+static const char normbgcolor[]     = "#3f3f3f";
+static const char normfgcolor[]     = "#dcdccc";
+static const char selbordercolor[]  = "#656665";
+static const char selbgcolor[]      = "#333333";
+static const char selfgcolor[]      = "#8cd0d3";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 12;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */

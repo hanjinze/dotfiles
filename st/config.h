@@ -5,7 +5,8 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "MonteCarlo:pixelsize=13";
+
+static char font[] = "PragmataPro-7";
 static int borderpx = 1;
 static char shell[] = "/bin/tcsh";
 
@@ -26,23 +27,23 @@ static unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#262626",
-	"#ff6565",
-	"#93d44f",
-	"#eab93d",
-	"#204a87",
-	"#ce5c00",
-	"#89b6e2",
-	"#cccccc",
+	"#3a3a3a",
+	"#705050",
+	"#60b48a",
+	"#dfaf8f",
+	"#506070",
+	"#dc8cc3",
+	"#8cd0d3",
+	"#DCDCCC",
 
 	/* 8 bright colors */
-	"#555753",
-	"#ff8d8d",
-	"#c8e7a8",
-	"#ffc123",
-	"#3465a4",
-	"#f57900",
-	"#46a4ff",
+	"#709080",
+	"#cc9393",
+	"#7f9f7f",
+	"#f0dfaf",
+	"#94bff3",
+	"#ec93d3",
+	"#93e0e3",
 	"#ffffff",
 
 	[255] = 0,

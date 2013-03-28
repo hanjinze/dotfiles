@@ -10,8 +10,8 @@ let g:nerdtree_tabs_open_on_console_startup=1
 let g:Powerline_symbols = 'fancy'
 
 set background=dark
-let g:wombat_termcolors=256
-colorscheme wombat
+let g:zenburn_termcolors=256
+colorscheme zenburn
 
 set shiftwidth=4
 set softtabstop=4
@@ -26,7 +26,7 @@ set ruler               " Show the cursor position all the time
 set showtabline=2
 set laststatus=2
 
-set guifont=MonteCarlo
+set guifont=PragmataPro\ 9
 
 nmap \e :NERDTreeToggle<CR>
 nmap j gj
