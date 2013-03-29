@@ -16,13 +16,15 @@ fi
 
 
 # Put your fun stuff here.
-PATH="/opt/android-sdk-update-manager/platform-tools/:~/bin/:$PATH"
+PATH="~/bin/:$PATH"
 EDITOR="vim"
 ANDROID_JAVA_HOME="/etc/java-config-2/current-system-vm"
+alias ls='ls -G'
+
 
 export ANDROID_JAVA_HOME
 export TERM='xterm-256color'
-export LANG=en_US.utf8
+export LANG=en_US.UTF-8
 export BROWSER=google-chrome
 export XAUTHORITY=$HOME/.Xauthority
 

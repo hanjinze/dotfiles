@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "Powerline Consolas:pixelsize=10";
+static const char font[]            = "Terminus:pixelsize=9";
 static const char normbordercolor[] = "#434443";
 static const char normbgcolor[]     = "#3f3f3f";
 static const char normfgcolor[]     = "#dcdccc";
@@ -110,8 +110,8 @@ static Key keys[] = {
     { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
     { 0,                            XK_F11,    spawn,          {.v = playpause } },
     { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
-    { 0,                            0x1008ff11,spawn,          {.v = volup } },
-    { 0,                            0x1008ff13,spawn,          {.v = voldown } },
+    { 0,                            0x1008ff13,spawn,          {.v = volup } },
+    { 0,                            0x1008ff11,spawn,          {.v = voldown } },
     TAGKEYS(                        XK_1,                      0)
     TAGKEYS(                        XK_2,                      1)
     TAGKEYS(                        XK_3,                      2)

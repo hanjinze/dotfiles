@@ -1,14 +1,12 @@
-/* See LICENSE file for copyright and license details. */
-
 /*
  * appearance
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 
-static char font[] = "PragmataPro-7";
+static char font[] = "Terminus";
 static int borderpx = 1;
-static char shell[] = "/bin/tcsh";
+static char shell[] = "/usr/local/bin/bash";
 
 /* timeouts (in milliseconds) */
 static unsigned int doubleclicktimeout = 300;

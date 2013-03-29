@@ -7,5 +7,5 @@ fi
 #exec openbox
 xsetroot -name " " &
 feh --no-xinerama --bg-center ~/.wallpapers/LightningColor.png
-( sleep 3 && conky | dzen2 -xs 1 -x 500 -e '' -fg '#dcdcdc' -bg '#262626' -ta r -fn '-*-montecarlo-medium-*-*-*-*-*-*-*-*-*-*-*' -p ) & 
+( sleep 3 && conky | dzen2 -xs 1 -x 500 -e '' -fg '#dcdcdc' -bg '#3a3a3a' -ta r -fn '-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*' -p ) & 
 exec $HOME/.config/dwm/dwm

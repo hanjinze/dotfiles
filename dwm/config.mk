@@ -33,4 +33,4 @@ LDFLAGS  = -lm -g ${LIBS}
 #LDFLAGS = ${LIBS}
 
 # compiler and linker
-CC = gcc47
+CC = clang
