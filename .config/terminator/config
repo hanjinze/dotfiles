@@ -1,26 +1,40 @@
 [global_config]
-  enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
   title_transmit_bg_color = "#d30102"
+  borderless = True
   focus = system
+  tab_position = hidden
 [keybindings]
 [profiles]
   [[default]]
-    foreground_color = "#dddddd"
-    palette = "#222222:#ff6565:#93d44f:#eab93d:#204a87:#ce5c00:#89b6e2:#cccccc:#555753:#ff8d8d:#c8e7a8:#ffc123:#3465a4:#f57900:#46a4ff:#ffffff"
-    background_darkness = 0.7
     use_system_font = False
     cursor_blink = False
+    icon_bell = False
+    show_titlebar = False
+    font = PragmataPro 10
+    allow_bold = False
+  [[solarized-dark]]
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#002b36:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+    background_color = "#002b36"
+    cursor_color = "#eee8d5"
+    foreground_color = "#eee8d5"
+  [[solarized-light]]
+    foreground_color = "#586e75"
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#002b36:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+    use_system_font = False
+    cursor_color = "#002b36"
+    cursor_blink = False
+    icon_bell = False
     scrollbar_position = hidden
     show_titlebar = False
     font = PragmataPro 9
-    background_color = "#262626"
+    background_color = "#fdf6e3"
     allow_bold = False
 [layouts]
   [[default]]
     [[[child1]]]
       type = Terminal
       parent = window0
-      profile = default
+      profile = solarized-light
     [[[window0]]]
       type = Window
       parent = ""

@@ -1,10 +1,2 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =8
-let g:netrw_dirhist_1='/home/derek/.fontconfig'
-let g:netrw_dirhist_2='/home/derek/android/manifest'
-let g:netrw_dirhist_3='/home/derek/.vim'
-let g:netrw_dirhist_4='/home/derek/.fontconfig'
-let g:netrw_dirhist_5='/home/derek/dotfiles/powerline-shell'
-let g:netrw_dirhist_6='/home/derek/dotfiles/.newsbeuter/colors'
-let g:netrw_dirhist_7='/usr/home/derek/.mozilla/firefox/8tzzadnq.default'
-let g:netrw_dirhist_8='/usr/home/derek/src/st'
+let g:netrw_dirhist_cnt =0

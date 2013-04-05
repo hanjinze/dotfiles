@@ -1,0 +1,27 @@
+[global_config]
+  enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  title_transmit_bg_color = "#d30102"
+  focus = system
+[keybindings]
+[profiles]
+  [[default]]
+    foreground_color = "#dddddd"
+    palette = "#222222:#705050:#60b48a:#dfaf8f:#506070:#dc8cc3:#8cd0d3:#dcdcdc:#709080:#cc9393:#7f9f7f:#f0dfaf:#94bff3:#ec93d3:#93e0e3:#ffffff"
+    background_darkness = 0.7
+    use_system_font = False
+    cursor_blink = False
+    scrollbar_position = hidden
+    show_titlebar = False
+    font = PragmataPro 9
+    background_color = "#3a3a3a"
+    allow_bold = False
+[layouts]
+  [[default]]
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = default
+    [[[window0]]]
+      type = Window
+      parent = ""
+[plugins]

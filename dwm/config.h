@@ -1,13 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "Terminus:pixelsize=9";
-static const char normbordercolor[] = "#434443";
-static const char normbgcolor[]     = "#3f3f3f";
-static const char normfgcolor[]     = "#dcdccc";
-static const char selbordercolor[]  = "#656665";
-static const char selbgcolor[]      = "#333333";
-static const char selfgcolor[]      = "#8cd0d3";
+static const char font[]            = "PragmataPro:pixelsize=10";
+static const char normbordercolor[] = "#eee8d5";
+static const char normbgcolor[]     = "#002b36";
+static const char normfgcolor[]     = "#fdf6e3";
+static const char selbordercolor[]  = "#586e75";
+static const char selbgcolor[]      = "#586e75";
+static const char selfgcolor[]      = "#fdf6e3";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 12;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
@@ -62,7 +62,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static const char *dmenucmd[]   =   { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
-static const char *termcmd[]    =   { "/home/derek/src/st/st", NULL };
+static const char *termcmd[]    =   { "st", NULL };
 static const char *browsercmd[] =   { "firefox", NULL };
 static const char *screenshot[] =   { "/home/derek/bin/screenshot.sh", NULL };
 static const char *windowshot[] =   { "/home/derek/bin/screenshot.sh", "-window", NULL };
@@ -110,8 +110,8 @@ static Key keys[] = {
     { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
     { 0,                            XK_F11,    spawn,          {.v = playpause } },
     { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
-    { 0,                            0x1008ff13,spawn,          {.v = volup } },
-    { 0,                            0x1008ff11,spawn,          {.v = voldown } },
+    { 0,                            0x1008ff11,spawn,          {.v = volup } },
+    { 0,                            0x1008ff13,spawn,          {.v = voldown } },
     TAGKEYS(                        XK_1,                      0)
     TAGKEYS(                        XK_2,                      1)
     TAGKEYS(                        XK_3,                      2)

@@ -9,9 +9,8 @@ set encoding=utf-8
 let g:nerdtree_tabs_open_on_console_startup=1
 let g:Powerline_symbols = 'fancy'
 
-set background=dark
-let g:zenburn_termcolors=256
-colorscheme zenburn
+set background=light
+colorscheme solarized
 
 set shiftwidth=4
 set softtabstop=4

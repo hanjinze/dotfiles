@@ -1,6 +1,8 @@
 # Awesome, based on Zenburn, based on Murrina333
 
-gtk_color_scheme = "fg_color:#aaaaaa\nbg_color:#2e2e2e\nbase_color:#3f3f3f\ntext_color:#aaaaaa\nselected_bg_color:#535d6c\nselected_fg_color:#ffffff\nmenu_color:#222222"
+#gtk_color_scheme = "fg_color:#aaaaaa\nbg_color:#2e2e2e\nbase_color:#3f3f3f\ntext_color:#aaaaaa\nselected_bg_color:#535d6c\nselected_fg_color:#ffffff\nmenu_color:#222222"
+gtk_color_scheme = "fg_color:#002b36\nbg_color:#fdf6e3\nbase_color:#eee8d5\ntext_color:#002b36\nselected_bg_color:#93a1a1\nselected_fg_colo
+r:#002b36"  
 
 gtk-icon-sizes = "panel-menu=16,16:panel=16,16:gtk-button=16,16:gtk-large-toolbar=16,16"
 style "theme-default"

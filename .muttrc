@@ -45,23 +45,7 @@ macro index,pager gs "<change-folder>=[Gmail]/Starred<enter>" "Go to starred mes
 macro index,pager gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
 macro index,pager gl "<change-folder>?" "Go to 'Label'" # will take you to a list of all your Labels (similar to viewing folders).
 
-# color WHERE FOREGROUND BACKGROUND REGEXP
-color hdrdefault color8 default
-color header color8 black ^From:
-color header color0 black ^To:
-color quoted magenta black
-color quoted1 blue black
-color quoted2 red black
-color quoted3 yellow black
-color quoted4 cyan black          
-color quoted5 blue black
-color quoted6 magenta black
-color quoted7 red black
-color quoted8 yellow black
-color quoted9 cyan black
-color signature blue default
-color index color7 color0 ~p # To me (personal)
-color index color2 color0 ~N # New
-color index color2 color0 ~O # Old
-
 auto_view text/html
+
+#source ~/.mutt/zenburn.theme.rc
+source ~/.mutt/mutt-colors-solarized-light-16.muttrc
