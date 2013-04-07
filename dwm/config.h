@@ -72,7 +72,7 @@ static const char *nexttrack[]  =   { "mpc", "next", NULL };
 static const char *prevtrack[]  =   { "mpc", "prev", NULL };
 static const char *playpause[]  =   { "mpc", "toggle", NULL };
 static const char *editor[]     =   { "$EDITOR", NULL };
-static const char *guieditor[]  =   { "gvim", NULL };
+static const char *guieditor[]  =   { "gvim", "-f", NULL };
 static const char *fmcmd[]      =   { "pcmanfm", NULL };
 
 static Key keys[] = {

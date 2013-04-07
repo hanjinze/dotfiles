@@ -6,7 +6,7 @@ filetype plugin indent on
 set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 set encoding=utf-8
 
-let g:nerdtree_tabs_open_on_console_startup=1
+"let g:nerdtree_tabs_open_on_console_startup=1
 let g:Powerline_symbols = 'fancy'
 
 set background=light
@@ -25,9 +25,12 @@ set ruler               " Show the cursor position all the time
 set showtabline=2
 set laststatus=2
 
-set guifont=Terminus\ 9
+set guifont=PragmataPro\ 9
 
 nmap \e :NERDTreeToggle<CR>
 nmap j gj
 nmap k gk
+
+au BufRead,BufNewFile *.pde set filetype=arduino
+au BufRead,BufNewFile *.ino set filetype=arduino
 
