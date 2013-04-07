@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "PragmataPro:pixelsize=12";
+static char font[] = "Terminus";
 static int borderpx = 1;
 static char shell[] = "/usr/local/bin/bash";
 
@@ -26,23 +26,23 @@ static unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-            "#073642",
-            "#DC322F",
-            "#859900",
-            "#B58900",
-            "#268BD2",
-            "#D33682",
-            "#2AA198",
-            "#073642",
+            "#3a3a3a",
+            "#705050",
+            "#60b48a",
+            "#dfaf8f",
+            "#506070",
+            "#dc8cc3",
+            "#8cd0d3",
+            "#DCDCCC",
 	/* 8 bright colors */
-            "#002b36",
-            "#CB4B16",
-            "#586e75",
-            "#657b83",
-            "#839496",
-            "#6C71C4",
-            "#93a1a1",
-            "#fdf6e3",
+            "#709080",
+            "#cc9393",
+            "#7f9f7f",
+            "#f0dfaf",
+            "#94bff3",
+            "#ec93d3",
+            "#93e0e3",
+            "#ffffff",
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
@@ -55,8 +55,8 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, unfocused cursor
  */
-static unsigned int defaultfg = 11;
-static unsigned int defaultbg = 15;
+static unsigned int defaultfg = 7;
+static unsigned int defaultbg = 0;
 static unsigned int defaultcs = 256;
 static unsigned int defaultucs = 257;
 
