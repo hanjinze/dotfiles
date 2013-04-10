@@ -8,4 +8,4 @@ fi
 xsetroot -name " " &
 feh --no-xinerama --bg-center ~/.wallpapers/LightningColor.png
 ( sleep 3 && conky | dzen2 -xs 1 -x 500 -e '' -fg '#dcdcdc' -bg '#002b36' -ta r -fn '-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*' -p ) & 
-exec $HOME/.config/dwm/dwm
+exec $HOME/dwm/dwm

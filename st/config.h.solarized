@@ -7,7 +7,7 @@
  */
 static char font[] = "PragmataPro:pixelsize=12";
 static int borderpx = 1;
-static char shell[] = "/usr/local/bin/bash";
+static char shell[] = "/bin/bash";
 
 /* timeouts (in milliseconds) */
 static unsigned int doubleclicktimeout = 300;
@@ -18,7 +18,7 @@ static unsigned int xfps = 60;
 static unsigned int actionfps = 30;
 
 /* TERM value */
-static char termname[] = "st-256color";
+static char termname[] = "xterm-256color";
 
 static unsigned int tabspaces = 8;
 

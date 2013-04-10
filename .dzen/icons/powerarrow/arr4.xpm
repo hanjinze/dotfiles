@@ -1,5 +1,5 @@
 /* XPM */
-static char * arr4_scaled_xpm[] = {
+static char * arr4_xpm[] = {
 "10 16 3 1",
 " 	c None",
 ".	c #002B36",

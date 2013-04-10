@@ -51,6 +51,7 @@
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
 #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X)               (sizeof X / sizeof X[0])
+#define MAXCOLORS		8
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
@@ -2410,8 +2411,8 @@ drawstatus (Monitor *m) {
     int curpos_ctr = 0;
     int input_len = strlen(stext);
     int plain_text_len = 0;
-    unsigned long cur_fg = dc.norm[ColFG];
-    unsigned long cur_bg = dc.norm[ColBG];
+    unsigned long cur_fg = dc.norm[ColFG].pixel;
+    unsigned long cur_bg = dc.norm[ColBG].pixel;
     struct ansi_node *head = NULL;
     int x, x_orig;
     struct ansi_node *curn;
@@ -2507,8 +2508,8 @@ drawstatus (Monitor *m) {
         do {
             if (curn->type == -1) continue;
             if (curn->type == ansi_reset) { 
-                cur_fg = dc.norm[ColFG];
-                cur_bg = dc.norm[ColBG]; 
+                cur_fg = dc.norm[ColFG].pixel;
+                cur_bg = dc.norm[ColBG].pixel; 
                 free(curn->color);
             } else if (curn->type == ansi_fg) {
                 cur_fg = getcolor(curn->color);

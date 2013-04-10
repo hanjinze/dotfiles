@@ -1,19 +1,17 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "PragmataPro:pixelsize=10";
-static const char normbordercolor[] = "#eee8d5";
+static const char font[]            = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*";
+static const char normbordercolor[] = "#073642";
 static const char normbgcolor[]     = "#002b36";
 static const char normfgcolor[]     = "#fdf6e3";
 static const char selbordercolor[]  = "#586e75";
-static const char selbgcolor[]      = "#586e75";
+static const char selbgcolor[]      = "#073642";
 static const char selfgcolor[]      = "#fdf6e3";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 12;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
-static const Bool showbottombar     = False;
-static const Bool bottombar         = False;
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -28,7 +26,7 @@ static const Rule rules[] = {
 	{ "Firefox",  NULL,       NULL,       2,            False,       -1 },
         { "MPlayer",  NULL,       NULL,       0,            True,        -1 },
         { "feh",      NULL,       NULL,       0,            True,        -1 },
-        { "Chrome",   NULL,       NULL,       2,            False,        0 },
+        { "Chromium",   NULL,       NULL,       2,            False,        0 },
         { "Pcmanfm",  NULL,       NULL,       4,            False,        1 },
         { "Thunar",   NULL,       NULL,       4,            False,        1 },
         { "Geeqie",   NULL,       NULL,       0,            True,        -1 },
@@ -44,7 +42,7 @@ static const Bool resizehints = False; /* True means respect size hints in tiled
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      tile },    /* first entry is default */
-        { "[G]",      grid },
+        { "[G]",      grid }, 
         { "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
@@ -63,11 +61,12 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[]   =   { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]    =   { "st", NULL };
-static const char *browsercmd[] =   { "firefox", NULL };
+static const char *browsercmd[] =   { "chromium", NULL };
 static const char *screenshot[] =   { "/home/derek/bin/screenshot.sh", NULL };
 static const char *windowshot[] =   { "/home/derek/bin/screenshot.sh", "-window", NULL };
-static const char *volup[]      =   { "mixer", "vol", "+2", NULL };
-static const char *voldown[]    =   { "mixer", "vol", "-2", NULL };
+static const char *volup[]      =   { "amixer", "-c", "0", "-q", "set", "Master", "3%+", "unmute", NULL };
+static const char *voldown[]    =   { "amixer", "-c", "0", "-q", "set", "Master", "3%-", "unmute", NULL };
+static const char *volmute[]    =   { "amixer", "-c", "0", "-q", "set", "Master", "toggle", NULL };
 static const char *nexttrack[]  =   { "mpc", "next", NULL };
 static const char *prevtrack[]  =   { "mpc", "prev", NULL };
 static const char *playpause[]  =   { "mpc", "toggle", NULL };
@@ -80,7 +79,6 @@ static Key keys[] = {
     { MODKEY,                       XK_r,      spawn,          {.v = dmenucmd } },
     { MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
     { MODKEY,                       XK_b,      togglebar,      {0} },
-    { MODKEY|ShiftMask,             XK_b,      togglebottombar,{0} },
     { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
     { MODKEY|ShiftMask,             XK_j,      zoom,           {0} },
     { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -110,8 +108,9 @@ static Key keys[] = {
     { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
     { 0,                            XK_F11,    spawn,          {.v = playpause } },
     { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
-    { 0,                            0x1008ff11,spawn,          {.v = volup } },
-    { 0,                            0x1008ff13,spawn,          {.v = voldown } },
+    { 0,                            0x1008ff13,spawn,          {.v = volup } },
+    { 0,                            0x1008ff11,spawn,          {.v = voldown } },
+    { 0,                            0x1008ff12,spawn,          {.v = volmute } },
     TAGKEYS(                        XK_1,                      0)
     TAGKEYS(                        XK_2,                      1)
     TAGKEYS(                        XK_3,                      2)

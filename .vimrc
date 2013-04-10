@@ -7,9 +7,9 @@ set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 set encoding=utf-8
 
 "let g:nerdtree_tabs_open_on_console_startup=1
-let g:Powerline_symbols = 'fancy'
 
-set background=light
+let g:Powerlinelight = 'fancy'
+set background=dark
 colorscheme solarized
 
 set shiftwidth=4
@@ -24,6 +24,7 @@ set history=150         " keep 50 lines of command history
 set ruler               " Show the cursor position all the time
 set showtabline=2
 set laststatus=2
+set number
 
 set guifont=PragmataPro\ 9
 

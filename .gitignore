@@ -16,3 +16,8 @@ history.search
 *.lock
 *.core
 *.log
+*.o
+st
+
+# Ignore Pragmata Pro font because its not free #
+Pragmata*
