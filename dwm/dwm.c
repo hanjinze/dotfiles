@@ -39,7 +39,6 @@
 #ifdef XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
-#include <X11/Xft/Xft.h>
 
 #include "draw.h"
 #include "util.h"
@@ -51,13 +50,11 @@
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
 #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X)               (sizeof X / sizeof X[0])
-#define MAXCOLORS		8
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (textnw(X, strlen(X)) + dc.font.height)
-#define STATUS_BUF_LEN          8192 //la11111
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
@@ -103,15 +100,16 @@ struct Client {
 
 typedef struct {
 	int x, y, w, h;
-	XftColor norm[ColLast];
-	XftColor sel[ColLast];
+	unsigned long norm[ColLast];
+	unsigned long sel[ColLast];
 	Drawable drawable;
 	GC gc;
 	struct {
 		int ascent;
 		int descent;
 		int height;
-		XftFont *xfont;
+		XFontSet set;
+		XFontStruct *xfont;
 	} font;
 } DC; /* draw context */
 
@@ -127,13 +125,13 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
+typedef struct Pertag Pertag;
 struct Monitor {
 	char ltsymbol[16];
 	float mfact;
 	int nmaster;
 	int num;
 	int by;               /* bar geometry */
-	int bby;	      /* bottom bar geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
 	unsigned int seltags;
@@ -141,15 +139,13 @@ struct Monitor {
 	unsigned int tagset[2];
 	Bool showbar;
 	Bool topbar;
-	Bool showbottombar;
-	Bool bottombar;
 	Client *clients;
 	Client *sel;
 	Client *stack;
 	Monitor *next;
 	Window barwin;
-	Window bbarwin;
 	const Layout *lt[2];
+	Pertag *pertag;
 };
 
 typedef struct {
@@ -184,20 +180,21 @@ static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
-static void drawsquare(Bool filled, Bool empty, Bool invert, XftColor col[ColLast]);
-static void drawtext(const char *text, XftColor col[ColLast], Bool invert);
+static void drawsquare(Bool filled, Bool empty, Bool invert, unsigned long col[ColLast]);
+static void drawtext(const char *text, unsigned long col[ColLast], Bool invert);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
-static XftColor getcolor(const char *colstr);
+static unsigned long getcolor(const char *colstr);
 static Bool getrootptr(int *x, int *y);
 static long getstate(Window w);
 static Bool gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, Bool focused);
 static void grabkeys(void);
+static void grid(Monitor *m);
 static void incnmaster(const Arg *arg);
 static void initfont(const char *fontstr);
 static void keypress(XEvent *e);
@@ -206,7 +203,6 @@ static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
-static void grid(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
@@ -236,7 +232,6 @@ static void tagmon(const Arg *arg);
 static int textnw(const char *text, unsigned int len);
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
-static void togglebottombar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -263,8 +258,7 @@ static void zoom(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
-static char stext[STATUS_BUF_LEN]; //la11111
-static char btext[256];
+static char stext[256];
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh, blw = 0;      /* bar geometry */
@@ -297,27 +291,18 @@ static Window root;
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
+struct Pertag {
+	unsigned int curtag, prevtag; /* current and previous tag */
+	int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */
+	float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */
+	unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */
+	const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */
+	Bool showbars[LENGTH(tags) + 1]; /* display bar for the current tag */
+};
+
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
-//////////////////////////// la11111
-enum { ansi_reset, ansi_fg, ansi_bg, ansi_text, ansi_last};
-
-struct ansi_node {
-    int type;
-    char * color;
-    char * text; 
-    struct ansi_node *next;
-};
-
-static void drawcoloredtext(const char *text, unsigned long fg, unsigned long bg);
-static void ParseAnsiEsc(char * seq, char buffer[]);
-static void GetAnsiColor(int escapecode, char buffer[]);
-static int countchars(char c, char * buf);
-static struct ansi_node * addnode(struct ansi_node *head, int type, char * color, char * text);
-static void destroy_llist(struct ansi_node *head);
-static void drawstatus(Monitor *m);
-///////////////////////////////
 /* function implementations */
 void
 applyrules(Client *c) {
@@ -513,6 +498,10 @@ cleanup(void) {
 	for(m = mons; m; m = m->next)
 		while(m->stack)
 			unmanage(m->stack, False);
+	if(dc.font.set)
+		XFreeFontSet(dpy, dc.font.set);
+	else
+		XFreeFont(dpy, dc.font.xfont);
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	XFreePixmap(dpy, dc.drawable);
 	XFreeGC(dpy, dc.gc);
@@ -538,8 +527,6 @@ cleanupmon(Monitor *mon) {
 	}
 	XUnmapWindow(dpy, mon->barwin);
 	XDestroyWindow(dpy, mon->barwin);
-	XUnmapWindow(dpy, mon->bbarwin);
-	XDestroyWindow(dpy, mon->bbarwin);
 	free(mon);
 }
 
@@ -610,10 +597,8 @@ configurenotify(XEvent *e) {
 				XFreePixmap(dpy, dc.drawable);
 			dc.drawable = XCreatePixmap(dpy, root, sw, bh, DefaultDepth(dpy, screen));
 			updatebars();
-			for(m = mons; m; m = m->next) {
+			for(m = mons; m; m = m->next)
 				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
-				XMoveResizeWindow(dpy, m->bbarwin, m->wx, m->bby, m->ww, bh);
-			}
 			focus(NULL);
 			arrange(NULL);
 		}
@@ -676,6 +661,7 @@ configurerequest(XEvent *e) {
 Monitor *
 createmon(void) {
 	Monitor *m;
+	int i;
 
 	if(!(m = (Monitor *)calloc(1, sizeof(Monitor))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Monitor));
@@ -684,11 +670,27 @@ createmon(void) {
 	m->nmaster = nmaster;
 	m->showbar = showbar;
 	m->topbar = topbar;
-	m->bottombar = bottombar;
-	m->showbottombar = bottombar ? True : False;
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+	if(!(m->pertag = (Pertag *)calloc(1, sizeof(Pertag))))
+		die("fatal: could not malloc() %u bytes\n", sizeof(Pertag));
+	m->pertag->curtag = m->pertag->prevtag = 1;
+	for(i=0; i <= LENGTH(tags); i++) {
+		/* init nmaster */
+		m->pertag->nmasters[i] = m->nmaster;
+
+		/* init mfacts */
+		m->pertag->mfacts[i] = m->mfact;
+
+		/* init layouts */
+		m->pertag->ltidxs[i][0] = m->lt[0];
+		m->pertag->ltidxs[i][1] = m->lt[1];
+		m->pertag->sellts[i] = m->sellt;
+
+		/* init showbar */
+		m->pertag->showbars[i] = m->showbar;
+	}
 	return m;
 }
 
@@ -741,7 +743,7 @@ void
 drawbar(Monitor *m) {
 	int x;
 	unsigned int i, occ = 0, urg = 0;
-	XftColor *col;
+	unsigned long *col;
 	Client *c;
 
 	for(c = m->clients; c; c = c->next) {
@@ -763,8 +765,13 @@ drawbar(Monitor *m) {
 	dc.x += dc.w;
 	x = dc.x;
 	if(m == selmon) { /* status is only drawn on selected monitor */
-
-       drawstatus(m); //la11111
+		dc.w = TEXTW(stext);
+		dc.x = m->ww - dc.w;
+		if(dc.x < x) {
+			dc.x = x;
+			dc.w = m->ww - x;
+		}
+		drawtext(stext, dc.norm, False);
 	}
 	else
 		dc.x = m->ww;
@@ -779,15 +786,6 @@ drawbar(Monitor *m) {
 			drawtext(NULL, dc.norm, False);
 	}
 	XCopyArea(dpy, dc.drawable, m->barwin, dc.gc, 0, 0, m->ww, bh, 0, 0);
-	if(m->showbottombar) {
-		dc.x = 0;
-		dc.w = TEXTW(btext);
-		drawtext(btext, dc.norm, False);
-		dc.x += dc.w;
-		dc.w = m->ww - dc.x;
-		drawtext(NULL, dc.norm, False);
-		XCopyArea(dpy, dc.drawable, m->bbarwin, dc.gc, 0, 0, m->ww, bh, 0, 0);
-	}
 	XSync(dpy, False);
 }
 
@@ -800,10 +798,10 @@ drawbars(void) {
 }
 
 void
-drawsquare(Bool filled, Bool empty, Bool invert, XftColor col[ColLast]) {
+drawsquare(Bool filled, Bool empty, Bool invert, unsigned long col[ColLast]) {
 	int x;
 
-	XSetForeground(dpy, dc.gc, col[invert ? ColBG : ColFG].pixel);
+	XSetForeground(dpy, dc.gc, col[invert ? ColBG : ColFG]);
 	x = (dc.font.ascent + dc.font.descent + 2) / 4;
 	if(filled)
 		XFillRectangle(dpy, dc.drawable, dc.gc, dc.x+1, dc.y+1, x+1, x+1);
@@ -812,12 +810,11 @@ drawsquare(Bool filled, Bool empty, Bool invert, XftColor col[ColLast]) {
 }
 
 void
-drawtext(const char *text, XftColor col[ColLast], Bool invert) {
+drawtext(const char *text, unsigned long col[ColLast], Bool invert) {
 	char buf[256];
 	int i, x, y, h, len, olen;
-	XftDraw *d;
 
-	XSetForeground(dpy, dc.gc, col[invert ? ColFG : ColBG].pixel);
+	XSetForeground(dpy, dc.gc, col[invert ? ColFG : ColBG]);
 	XFillRectangle(dpy, dc.drawable, dc.gc, dc.x, dc.y, dc.w, dc.h);
 	if(!text)
 		return;
@@ -832,11 +829,11 @@ drawtext(const char *text, XftColor col[ColLast], Bool invert) {
 	memcpy(buf, text, len);
 	if(len < olen)
 		for(i = len; i && i > len - 3; buf[--i] = '.');
-
-	d = XftDrawCreate(dpy, dc.drawable, DefaultVisual(dpy, screen), DefaultColormap(dpy,screen));
-
-	XftDrawStringUtf8(d, &col[invert ? ColBG : ColFG], dc.font.xfont, x, y, (XftChar8 *) buf, len);
-	XftDrawDestroy(d);
+	XSetForeground(dpy, dc.gc, col[invert ? ColBG : ColFG]);
+	if(dc.font.set)
+		XmbDrawString(dpy, dc.drawable, dc.font.set, dc.gc, x, y, buf, len);
+	else
+		XDrawString(dpy, dc.drawable, dc.gc, x, y, buf, len);
 }
 
 void
@@ -882,7 +879,7 @@ focus(Client *c) {
 		detachstack(c);
 		attachstack(c);
 		grabbuttons(c, True);
-		XSetWindowBorder(dpy, c->win, dc.sel[ColBorder].pixel);
+		XSetWindowBorder(dpy, c->win, dc.sel[ColBorder]);
 		setfocus(c);
 	}
 	else {
@@ -956,14 +953,14 @@ getatomprop(Client *c, Atom prop) {
 	return atom;
 }
 
-XftColor 
+unsigned long
 getcolor(const char *colstr) {
-	XftColor color;
+	Colormap cmap = DefaultColormap(dpy, screen);
+	XColor color;
 
-	if(!XftColorAllocName(dpy, DefaultVisual(dpy, screen), DefaultColormap(dpy, screen), colstr, &color))
+	if(!XAllocNamedColor(dpy, cmap, colstr, &color, &color))
 		die("error, cannot allocate color '%s'\n", colstr);
-
-	return color;
+	return color.pixel;
 }
 
 Bool
@@ -1057,20 +1054,70 @@ grabkeys(void) {
 }
 
 void
+grid(Monitor *m) {
+    unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
+    Client *c;
+
+    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next))
+        n++;
+
+    /* grid dimensions */
+    for(rows = 0; rows <= n/2; rows++)
+        if(rows*rows >= n)
+            break;
+    cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
+
+    /* window geoms (cell height/width) */
+    ch = m->wh / (rows ? rows : 1);
+    cw = m->ww / (cols ? cols : 1);
+    for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+        cx = m->wx + (i / rows) * cw;
+        cy = m->wy + (i % rows) * ch;
+        /* adjust height/width of last row/column's windows */
+        ah = ((i + 1) % rows == 0) ? m->wh - ch * rows : 0;
+        aw = (i >= rows * (cols - 1)) ? m->ww - cw * cols : 0;
+        resize(c, cx, cy, cw - 2 * c->bw + aw, ch - 2 * c->bw + ah, False);
+        i++;
+    }
+}
+
+void
 incnmaster(const Arg *arg) {
-	selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
 	arrange(selmon);
 }
 
 void
 initfont(const char *fontstr) {
+	char *def, **missing;
+	int n;
 
-	if(!(dc.font.xfont = XftFontOpenName(dpy,screen,fontstr))
-	&& !(dc.font.xfont = XftFontOpenName(dpy,screen,"fixed")))
-		die("error, cannot load font: '%s'\n", fontstr);
+	dc.font.set = XCreateFontSet(dpy, fontstr, &missing, &n, &def);
+	if(missing) {
+		while(n--)
+			fprintf(stderr, "dwm: missing fontset: %s\n", missing[n]);
+		XFreeStringList(missing);
+	}
+	if(dc.font.set) {
+		XFontStruct **xfonts;
+		char **font_names;
 
-	dc.font.ascent = dc.font.xfont->ascent;
-	dc.font.descent = dc.font.xfont->descent;
+		dc.font.ascent = dc.font.descent = 0;
+		XExtentsOfFontSet(dc.font.set);
+		n = XFontsOfFontSet(dc.font.set, &xfonts, &font_names);
+		while(n--) {
+			dc.font.ascent = MAX(dc.font.ascent, (*xfonts)->ascent);
+			dc.font.descent = MAX(dc.font.descent,(*xfonts)->descent);
+			xfonts++;
+		}
+	}
+	else {
+		if(!(dc.font.xfont = XLoadQueryFont(dpy, fontstr))
+		&& !(dc.font.xfont = XLoadQueryFont(dpy, "fixed")))
+			die("error, cannot load font: '%s'\n", fontstr);
+		dc.font.ascent = dc.font.xfont->ascent;
+		dc.font.descent = dc.font.xfont->descent;
+	}
 	dc.font.height = dc.font.ascent + dc.font.descent;
 }
 
@@ -1134,9 +1181,16 @@ manage(Window w, XWindowAttributes *wa) {
 		applyrules(c);
 	}
 	/* geometry */
-	c->x = c->oldx = wa->x;
-	c->y = c->oldy = wa->y;
-	c->w = c->oldw = wa->width;
+        if((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)) {
+            c->x = c->oldx = c->mon->wx + (c->mon->ww / 2 - wa->width / 2);
+            c->y = c->oldy = c->mon->wy + (c->mon->wh / 2 - wa->height / 2);
+        }
+        else {
+            c->x = c->oldx = wa->x;
+            c->y = c->oldy = wa->y;
+        }
+
+        c->w = c->oldw = wa->width;
 	c->h = c->oldh = wa->height;
 	c->oldbw = wa->border_width;
 
@@ -1152,7 +1206,7 @@ manage(Window w, XWindowAttributes *wa) {
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
-	XSetWindowBorder(dpy, w, dc.norm[ColBorder].pixel);
+	XSetWindowBorder(dpy, w, dc.norm[ColBorder]);
 	configure(c); /* propagates border_width, if size doesn't change */
 	updatewindowtype(c);
 	updatesizehints(c);
@@ -1211,34 +1265,6 @@ monocle(Monitor *m) {
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for(c = nexttiled(m->clients); c; c = nexttiled(c->next))
 		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
-}
-
-void
-grid(Monitor *m) {
-    unsigned int i, n, cx, cy, cw, ch, aw, ah, cols, rows;
-    Client *c;
-
-    for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next))
-        n++;
-
-    /* grid dimensions */
-    for(rows = 0; rows <= n/2; rows++)
-        if(rows*rows >= n)
-            break;
-    cols = (rows && (rows - 1) * rows >= n) ? rows - 1 : rows;
-
-    /* window geoms (cell height/width) */
-    ch = m->wh / (rows ? rows : 1);
-    cw = m->ww / (cols ? cols : 1);
-    for(i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-        cx = m->wx + (i / rows) * cw;
-        cy = m->wy + (i % rows) * ch;
-        /* adjust height/width of last row/column's windows */
-        ah = ((i + 1) % rows == 0) ? m->wh - ch * rows : 0;
-        aw = (i >= rows * (cols - 1)) ? m->ww - cw * cols : 0;
-        resize(c, cx, cy, cw - 2 * c->bw + aw, ch - 2 * c->bw + ah, False);
-        i++;
-    }
 }
 
 void
@@ -1602,10 +1628,13 @@ setfullscreen(Client *c, Bool fullscreen) {
 
 void
 setlayout(const Arg *arg) {
-	if(!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
-		selmon->sellt ^= 1;
+	if(!arg || !arg->v || arg->v != selmon->lt[selmon->sellt]) {
+		selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;
+		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
+	}
 	if(arg && arg->v)
-		selmon->lt[selmon->sellt] = (Layout *)arg->v;
+		selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
+	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
 	if(selmon->sel)
 		arrange(selmon);
@@ -1623,7 +1652,7 @@ setmfact(const Arg *arg) {
 	f = arg->f < 1.0 ? arg->f + selmon->mfact : arg->f - 1.0;
 	if(f < 0.1 || f > 0.9)
 		return;
-	selmon->mfact = f;
+	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;
 	arrange(selmon);
 }
 
@@ -1669,6 +1698,8 @@ setup(void) {
 	dc.drawable = XCreatePixmap(dpy, root, DisplayWidth(dpy, screen), bh, DefaultDepth(dpy, screen));
 	dc.gc = XCreateGC(dpy, root, 0, NULL);
 	XSetLineAttributes(dpy, dc.gc, 1, LineSolid, CapButt, JoinMiter);
+	if(!dc.font.set)
+		XSetFont(dpy, dc.gc, dc.font.xfont->fid);
 	/* init bars */
 	updatebars();
 	updatestatus();
@@ -1739,9 +1770,13 @@ tagmon(const Arg *arg) {
 
 int
 textnw(const char *text, unsigned int len) {
-	XGlyphInfo ext;
-	XftTextExtentsUtf8(dpy, dc.font.xfont, (XftChar8 *) text, len, &ext);
-	return ext.xOff;
+	XRectangle r;
+
+	if(dc.font.set) {
+		XmbTextExtents(dc.font.set, text, len, NULL, &r);
+		return r.width;
+	}
+	return XTextWidth(dc.font.xfont, text, len);
 }
 
 void
@@ -1772,18 +1807,10 @@ tile(Monitor *m) {
 
 void
 togglebar(const Arg *arg) {
-	selmon->showbar = !selmon->showbar;
+	selmon->showbar = selmon->pertag->showbars[selmon->pertag->curtag] = !selmon->showbar;
 	updatebarpos(selmon);
 	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
 	arrange(selmon);
-}
-
-void
-togglebottombar(const Arg *arg) {
-    selmon->showbottombar = !selmon->showbottombar;
-    updatebarpos(selmon);
-    XMoveResizeWindow(dpy, selmon->bbarwin, selmon->wx, selmon->bby, selmon->ww, bh);
-    arrange(selmon);
 }
 
 void
@@ -1816,9 +1843,29 @@ toggletag(const Arg *arg) {
 void
 toggleview(const Arg *arg) {
 	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
+	int i;
 
 	if(newtagset) {
+		if(newtagset == ~0) {
+			selmon->pertag->prevtag = selmon->pertag->curtag;
+			selmon->pertag->curtag = 0;
+		}
+		/* test if the user did not select the same tag */
+		if(!(newtagset & 1 << (selmon->pertag->curtag - 1))) {
+			selmon->pertag->prevtag = selmon->pertag->curtag;
+			for (i=0; !(newtagset & 1 << i); i++) ;
+			selmon->pertag->curtag = i + 1;
+		}
 		selmon->tagset[selmon->seltags] = newtagset;
+
+		/* apply settings for this view */
+		selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
+		selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
+		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
+		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+		if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
+			togglebar(NULL);
 		focus(NULL);
 		arrange(selmon);
 	}
@@ -1890,13 +1937,6 @@ updatebars(void) {
 		                          CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]);
 		XMapRaised(dpy, m->barwin);
-		if (m->bottombar) {
-			m->bbarwin = XCreateWindow(dpy, root, m->wx, m->bby, m->ww, bh, 0, DefaultDepth(dpy, screen),
-						   CopyFromParent, DefaultVisual(dpy, screen),
-						   CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
-			XDefineCursor(dpy, m->bbarwin, cursor[CurNormal]);
-			XMapRaised(dpy, m->bbarwin);
-		}
 	}
 }
 
@@ -1911,12 +1951,6 @@ updatebarpos(Monitor *m) {
 	}
 	else
 		m->by = -bh;
-	if (m->showbottombar) {
-		m->wh -= bh;
-		m->bby = m->wy + m->wh;
-	}
-	else
-		m->bby = -bh;
 }
 
 void
@@ -2089,39 +2123,8 @@ updatetitle(Client *c) {
 
 void
 updatestatus(void) {
-	char buftext[512];
-	if(!gettextprop(root, XA_WM_NAME, buftext, sizeof(buftext)))
+	if(!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
 		strcpy(stext, "dwm-"VERSION);
-	else {
-		char* blocation = strstr(buftext,"BOTTOM=");
-		if (blocation != NULL) {
-			int c = 0;
-			for (char* i = buftext; i < blocation; i++) {
-				if (c < sizeof(stext) - 1)
-					stext[c] = *i;
-				else
-					break;
-				c++;
-			}
-			stext[c] = '\0';
-			blocation += 7;
-			c = 0;
-			for (char* i = blocation; i < (blocation + sizeof(buftext)); i++)
-			{
-				if (c < sizeof(btext) - 1)
-					btext[c] = *i;
-				else
-					break;
-				c++;
-			}
-			btext[c] = '\0';
-		}
-		else {
-			for (int i = 0; i < sizeof(stext); i++)
-			stext[i] = buftext[i];
-			stext[sizeof(stext) - 1] = '\0';
-		}
-	}
 	drawbar(selmon);
 }
 
@@ -2157,11 +2160,33 @@ updatewmhints(Client *c) {
 
 void
 view(const Arg *arg) {
+	int i;
+	unsigned int tmptag;
+
 	if((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
 		return;
 	selmon->seltags ^= 1; /* toggle sel tagset */
-	if(arg->ui & TAGMASK)
+	if(arg->ui & TAGMASK) {
+		selmon->pertag->prevtag = selmon->pertag->curtag;
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
+		if(arg->ui == ~0)
+			selmon->pertag->curtag = 0;
+		else {
+			for (i=0; !(arg->ui & 1 << i); i++) ;
+			selmon->pertag->curtag = i + 1;
+		}
+	} else {
+		tmptag = selmon->pertag->prevtag;
+		selmon->pertag->prevtag = selmon->pertag->curtag;
+		selmon->pertag->curtag = tmptag;
+	}
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
+	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
+	selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
+	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+	selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+	if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
+		togglebar(NULL);
 	focus(NULL);
 	arrange(selmon);
 }
@@ -2258,449 +2283,3 @@ main(int argc, char *argv[]) {
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
-
-
-/*************************************************
-ansistatuscolors
-by la11111
-
-updated 11.12.12 - squashed my code together to 
-patch better across versions - killed remaining memory
-leaks. removed some useless junk.
-
-put ansi escape codes in your status bar output to 
-change the color. Note: full ansi spec not implemented
-at the moment. incorrect codes are ignored, even if they
-may be valid ansi codes (ie, changing up the order or something)
-
-*** escape code format:
-
-\e[<code>m
-
-    \e - ascii 27, hex 0x1b, octal 033
-    [ - literal bracket
-    m - literal 'm'
-
-*** codes supported:
-
-standard escape codes:
-
-n;m
-    n - 
-        0 - normal
-        1 - 'bright'
-    m -
-        30-37 - text foreground
-        40-47 - text background
-
-0 - 
-    reset formatting to default
-
-example (python):
-    print "\x1b[1;31mHello World!\x1b[0m"
-
-256-color escape codes (xterm):
-
-n;5;m
-    n -
-        38 - text foreground
-        48 - text background
-    m - 
-        0-15 - alias classic ansi colors
-        16-231 - rgb grid color
-        232-255 - grayscale ramp color
-
-example (python):
-    print "\x1b[38;5;196mHello World!\x1b[0m"
-
-for more info about escape sequences in general, see:
-http://www.frexx.de/xterm-256-notes/
-
-enjoy, my friends
--la0x1f
-***************************************************/
-
-void
-drawcoloredtext(const char *text, unsigned long fg, unsigned long bg) {
-	char buf[256];
-	int x, y, h, olen, len;
-
-	XSetForeground(dpy, dc.gc, bg);
-
-	XFillRectangle(dpy, dc.drawable, dc.gc, dc.x, dc.y, dc.w, dc.h);
-	if(!text)
-		return;
-	olen = strlen(text);
-	h = dc.font.ascent + dc.font.descent;
-	y = dc.y + (dc.h / 2) - (h / 2) + dc.font.ascent;
-	x = dc.x; 
-	for(len = MIN(olen, sizeof buf); len && textnw(text, len) > dc.w; len--);
-	if(!len)
-		return;
-	memcpy(buf, text, len);
-    
-	XSetForeground(dpy, dc.gc, fg);
-	if(dc.font.set)
-		XmbDrawString(dpy, dc.drawable, dc.font.set, dc.gc, x, y, buf, len);
-	else
-		XDrawString(dpy, dc.drawable, dc.gc, x, y, buf, len);
-}
-
-struct 
-ansi_node * addnode(struct ansi_node *head, int type, char * color, char * text) {
-    struct ansi_node* tmp;
-    if (head == NULL) {
-        head=(struct ansi_node *)malloc(sizeof(struct ansi_node));
-        if (head == NULL) {
-        //    printf("you're out of memory, son\n");
-            exit(1);
-        }
-        head->next = head;
-        head->type = type;
-        head->color = color;
-        head->text = text; 
-    } else {
-        tmp = head;
-        while(tmp->next != head) 
-            tmp = tmp->next;
-        tmp->next = (struct ansi_node *)malloc(sizeof(struct ansi_node));
-        if (tmp->next == NULL) {
-         //   printf("you're out of memory, son\n");
-            exit(1);
-        }
-        tmp = tmp->next;
-        tmp->next = head;
-        tmp->type = type;
-        tmp->color = color;
-        tmp->text = text; 
-    }
-    return head;
-}
-
-void 
-destroy_llist(struct ansi_node *head) {
-    struct ansi_node *current, *tmp;
-    current = head->next;
-    head->next = NULL;
-    while (current != NULL) {
-        tmp = current->next;
-        free(current);
-        current = tmp;
-    }
-}
-
-void 
-drawstatus (Monitor *m) {
-    /*
-       this function makes 2 passes:
-        -chops status text into pieces based on esc codes
-        -puts esc codes & text blocks in a linked list
-        -goes back through and outputs those blocks one at a time
-            in the color specified by the preceding escape code 
-    */
-    char * startpos = stext;
-    char * curpos = stext;
-    char * escstartpos = stext;
-    int inescape = 0;
-    int esc_len, text_len;
-    char * textbuf;
-    char * escbuf;
-    char plaintextbuf[1024] = "\0";
-    char color[16];
-    char * color_ptr;
-    int curpos_ctr = 0;
-    int input_len = strlen(stext);
-    int plain_text_len = 0;
-    unsigned long cur_fg = dc.norm[ColFG].pixel;
-    unsigned long cur_bg = dc.norm[ColBG].pixel;
-    struct ansi_node *head = NULL;
-    int x, x_orig;
-    struct ansi_node *curn;
-
-
-    while (curpos_ctr < input_len) {
-        if (*curpos == '\x1b') {
-            if (!(inescape)) {
-                inescape = 1;
-                escstartpos = curpos;
-                curpos++;
-                curpos_ctr++;
-                if (*curpos != '[') {
-                    escstartpos = startpos;
-                    inescape = 0;
-                } else {
-                    curpos++;
-                    curpos_ctr++;
-                }
-            } else {
-                escstartpos = startpos;
-                inescape = 0;
-            }
-        } else {
-            if (inescape) {
-                if ( ((*curpos >= '0' ) && (*curpos <= '9')) || (*curpos == ';') ) {
-                    curpos++;
-                    curpos_ctr++;
-                } else { 
-                    if (*curpos == 'm') {
-                        esc_len = curpos - escstartpos;
-                        escbuf = malloc(esc_len-1);
-                        if (escbuf) { strncpy(escbuf, escstartpos+2, esc_len-2);  }
-                        escbuf[esc_len-2] = '\0';
-                        ParseAnsiEsc(escbuf, color);
-                        free(escbuf);
-                        text_len= escstartpos - startpos;
-                        if (text_len > 0) { 
-                            plain_text_len += text_len;
-                            textbuf = malloc((text_len * sizeof(char))+ 1);
-                            if (textbuf) { strncpy(textbuf, startpos, text_len);}
-                            textbuf[text_len] = '\0';
-                            strcat(plaintextbuf, textbuf);
-                            head = addnode(head, ansi_text, "", strcpy(malloc(strlen(textbuf)+1), textbuf));
-                            free(textbuf);
-                        }
-                        color_ptr = color;
-                        if (color[0] == 'r') { 
-                            head = addnode(head, ansi_reset, strcpy( malloc(strlen(color)+1), color), ""); 
-                        } else if (color[0] == 'f') { //chops off 'fg:'
-                            head = addnode(head, ansi_fg, strcpy( malloc(strlen(color)-2), color_ptr+3),""); 
-                        } else if (color[0] == 'b') {
-                            head = addnode(head, ansi_bg, strcpy(malloc(strlen(color)-2),color_ptr+3), ""); 
-                        } else {
-                            head = addnode(head, -1, "", "");
-                        }
-                        curpos++;
-                        startpos = curpos;
-                        escstartpos = curpos;
-                    } else {
-                        escstartpos = startpos;
-                        curpos++;
-                        curpos_ctr++;
-                    }
-                    inescape = 0; 
-                }
-            } else {
-                curpos++;
-                curpos_ctr++;
-            }
-        }
-    }
-    if(strlen(startpos)) {
-        text_len= strlen(startpos);
-        textbuf = malloc((text_len * sizeof(char))+ 1);
-        if (textbuf) { strncpy(textbuf, startpos, text_len);}
-        textbuf[text_len] = '\0';
-        plain_text_len += strlen(startpos);
-        strcat(plaintextbuf, startpos);
-        head = addnode(head, ansi_text, "", strcpy(malloc(strlen(textbuf)+1), textbuf));
-        free(textbuf);
-    } 
-    x = dc.x;
-    dc.x = m->ww - textnw(plaintextbuf, strlen(plaintextbuf));
-    // not sure what would happen here... something wierd probably
-    if(dc.x < x) {
-        dc.x = x;
-        dc.w = m->ww - x;
-    }
-    x_orig = dc.x; //reset dc.x after so the window title doesn't overwrite status
-    curn = head; //iterate linked list
-    if (curn != NULL) {
-        do {
-            if (curn->type == -1) continue;
-            if (curn->type == ansi_reset) { 
-                cur_fg = dc.norm[ColFG].pixel;
-                cur_bg = dc.norm[ColBG].pixel; 
-                free(curn->color);
-            } else if (curn->type == ansi_fg) {
-                cur_fg = getcolor(curn->color);
-                free(curn->color);
-            } else if (curn->type == ansi_bg) {
-                cur_bg = getcolor(curn->color);
-                free(curn->color);
-            } else if (curn->type == ansi_text) {
-                dc.w = textnw(curn->text, strlen(curn->text));
-                drawcoloredtext(curn->text, cur_fg, cur_bg);
-                dc.x += dc.w;
-            
-                free(curn->text);
-
-
-
-            } else {
-                continue;
-            }    
-            curn = curn->next;
-        } while (curn != head);
-    }
-    dc.x = x_orig;
-    destroy_llist(head);
-}
-
-int //count occurrences of c in buf 
-countchars(char c, char * buf) {
-    char *ptr = buf;
-    int ctr = 0;
-    while(*ptr) {
-        if(*ptr == c) ctr++;
-        ptr++;
-    }
-    return ctr;
-}
-
-void 
-ParseAnsiEsc(char * seq, char buffer[]){
-    char *cp, *token;
-    static char * standardcolors[2][8] = {
-        {"#000000\0","#800000\0","#008000\0","#808000\0","#000080\0","#800080\0","#008080\0","#c0c0c0\0"},
-        {"#808080\0","#ff0000\0","#00ff00\0","#ffff00\0","#0000ff\0","#ff00ff\0","#00ffff\0","#ffffff\0"}
-    };
-    char * retbuf = (void *)buffer;
-    retbuf[0] = '\0';
-
-    cp = malloc(strlen(seq) + 1);
-    if (cp) { strcpy(cp, seq); }
-
-    int semis = countchars(';',seq);
-    char *delim = ";";
-    char * toklist[semis + 1];
-    int tok_ctr = 0;
-    int arglist[semis + 1];
-    char color[8];
-    int r,c,i,j;
-    char * layer;
-
-    token = strtok(cp,delim);
-    while(token) {
-        toklist[tok_ctr] = token;
-        tok_ctr++;
-        token = strtok(NULL,delim);
-    } 
-    if ((tok_ctr > 3) || (tok_ctr < 1)) {
-        free(cp);
-         return;
-    }
-    if (tok_ctr == 1) { 
-        if (strlen(toklist[0]) != 1) return;
-        if (toklist[0][0] != '0') {
-            free(cp);
-            return;
-        } else {
-            sprintf(retbuf,"r"); //reset to default
-            free(cp);
-            return;
-        }
-    }
-    for (i=0; i < tok_ctr; i++) {
-        for(j=0; j < strlen(toklist[i]); j++){
-            if ((toklist[i][j] < '0') || (toklist[i][j] > '9')) {
-                free(cp);
-                return;
-            }
-        }
-        arglist[i] = atoi(toklist[i]);
-    }
-    if (tok_ctr == 3) {
-        if (!(
-            (arglist[1] == 5) && 
-            ((arglist[0] == 38) || (arglist[0] == 48)) && 
-            (arglist[2] >= 16) && 
-            (arglist[2] <= 255)
-        )) {
-            free(cp);
-            return;
-        } else {
-            if (arglist[0] == 38) {
-                sprintf(retbuf,"fg:");
-            } else {
-                sprintf(retbuf,"bg:");
-            }
-           
-            GetAnsiColor(arglist[2], color);
-            strcat(retbuf, color);
-            free(cp);
-            return;
-         }
-    } else {
-        for (i = 0; i < tok_ctr; i++) {
-            if (!(
-                (arglist[i] == 0) ||
-                (arglist[i] == 1) ||
-                ((arglist[i] >= 30) && (arglist[i] <= 37)) ||
-                ((arglist[i] >= 40) && (arglist[i] <= 47))
-            )) {
-                free(cp);
-                return;
-            }
-        } 
-        if ((arglist[0] < 30) 
-        && (arglist[1] < 30)) {
-            free(cp);
-            return;
-        }
-        if ((arglist[0] > 1) 
-        && (arglist[1] > 1)) {
-            free(cp);
-            return;  
-        }
-        if (arglist[0] < 30) {
-            r = arglist[0];
-            c = arglist[1];
-        } else {
-            r = arglist[1];
-            c = arglist[0];
-        }
-        if (c > 37) {
-            layer = "bg:";
-            c -= 10;
-        } else {
-            layer = "fg:";
-        }
-        sprintf(retbuf, "%s%s", layer, standardcolors[r][c-30]);
-        free(cp);
-    } 
-}
-
-void 
-GetAnsiColor(int escapecode, char buffer[]){
-    char steps[6][3] = {
-        "00\0", "5f\0", "87\0", "af\0", "d6\0", "ff\0",
-    };
-    int i, panel, cell, col, row, val;
-    int cmin = 16;
-    int cmax = 231;
-    int gmax = 255;
-    int n = escapecode;
-    char * retbuf = (void *)buffer;
-
-    if (n < cmin) {
-        return;
-    } else if (n > gmax) {
-        return;
-    } else if (n <= cmax) {
-        i = n - 15;
-        panel = i / 36;
-        cell = i % 36;
-        if (cell == 0) {
-            cell = 36;
-            panel -= 1;
-        }
-        col = cell / 6;
-        row = cell % 6;
-        if (row == 0) {
-            col -= 1;
-            row = 5;
-        } else {
-            row -= 1;
-        }
-        sprintf(retbuf, "#%s%s%s", steps[panel], steps[col], steps[row]);
-    } else {
-        val = ((10*(n-232))+8);
-        sprintf(retbuf, "#%.2x%.2x%.2x",val,val,val);
-    }
-}
-
-/*************************************************
-end ansistatuscolors - la11111
-***************************************************/
-
-
