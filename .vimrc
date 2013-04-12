@@ -10,6 +10,7 @@ set encoding=utf-8
 
 let g:Powerlinelight = 'fancy'
 set background=dark
+"let g:solarized_termcolors=256
 colorscheme solarized
 
 set shiftwidth=4
