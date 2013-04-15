@@ -4,7 +4,7 @@
 #
 ##### connection settings #####
 ## set it in order to make tag editor and renaming files work properly
-#mpd_host = "/var/mpd/.mpd/socket"
+#mpd_host = "127.0.0.1"
 #mpd_port = "6600"
 mpd_music_dir = "/tank/Audio"
 #mpd_connection_timeout = "5"

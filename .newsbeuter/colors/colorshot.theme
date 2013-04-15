@@ -8,6 +8,6 @@ highlight  article      "^Date: .*$"    color4    default
 color      listnormal                   default    default
 color      listfocus                    color15       yellow
 color      info                         color7    black
-color      article                      color7  default
+color      article                      color12  default
 
 # vim: ft=conf

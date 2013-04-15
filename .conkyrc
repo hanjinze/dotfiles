@@ -35,10 +35,10 @@ ${mem}/${memmax} \
 ##############################
 ^bg(\#313131)^i(/home/derek/.dzen/icons/powerarrow/arr1-scaled.xpm)\
 ^i(/home/derek/.dzen/icons/net_wired.xbm) \
-${upspeedf eth0} KiB/s \
+${upspeedf re0} KiB/s \
 ^i(/home/derek/.dzen/icons/net_up_03.xbm)\
 ^i(/home/derek/.dzen/icons/net_down_03.xbm) \
-${downspeedf eth0} KiB/s \
+${downspeedf re0} KiB/s \
 ##############################
 # Date and Time              #
 ##############################

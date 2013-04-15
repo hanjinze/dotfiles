@@ -1,5 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-
+#include <X11/XF86keysym.h>
 /* appearance */
 static const char font[]            = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-*";
 static const char normbordercolor[] = "#073642";
@@ -26,12 +26,13 @@ static const Rule rules[] = {
 	{ "Firefox",  NULL,       NULL,       2,            False,       -1 },
         { "MPlayer",  NULL,       NULL,       0,            True,        -1 },
         { "feh",      NULL,       NULL,       0,            True,        -1 },
-        { "Chromium",   NULL,       NULL,       2,            False,        0 },
+        { "Chrome",   NULL,       NULL,       2,            False,        0 },
         { "Pcmanfm",  NULL,       NULL,       4,            False,        1 },
         { "Thunar",   NULL,       NULL,       4,            False,        1 },
         { "Geeqie",   NULL,       NULL,       0,            True,        -1 },
         { "Viewnior", NULL,       NULL,       0,            True,        -1 },
         { "Uzbl-tabbed",    NULL,   NULL,     0,            True,         0 },
+        { "Gifview",  NULL,       NULL,       0,            True,        -1 },
 };
 
 /* layout(s) */
@@ -61,11 +62,11 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[]   =   { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]    =   { "st", NULL };
-static const char *browsercmd[] =   { "chromium", NULL };
+static const char *browsercmd[] =   { "chrome", NULL };
 static const char *screenshot[] =   { "/home/derek/bin/screenshot.sh", NULL };
 static const char *windowshot[] =   { "/home/derek/bin/screenshot.sh", "-window", NULL };
-static const char *volup[]      =   { "amixer", "-c", "0", "-q", "set", "Master", "3%+", "unmute", NULL };
-static const char *voldown[]    =   { "amixer", "-c", "0", "-q", "set", "Master", "3%-", "unmute", NULL };
+static const char *volup[]      =   { "mixer", "vol", "+2", NULL };
+static const char *voldown[]    =   { "mixer", "vol", "-2", NULL };
 static const char *volmute[]    =   { "amixer", "-c", "0", "-q", "set", "Master", "toggle", NULL };
 static const char *nexttrack[]  =   { "mpc", "next", NULL };
 static const char *prevtrack[]  =   { "mpc", "prev", NULL };
@@ -108,8 +109,8 @@ static Key keys[] = {
     { 0,                            XK_F10,    spawn,          {.v = prevtrack } },
     { 0,                            XK_F11,    spawn,          {.v = playpause } },
     { 0,                            XK_F12,    spawn,          {.v = nexttrack } },
-    { 0,                            0x1008ff13,spawn,          {.v = volup } },
-    { 0,                            0x1008ff11,spawn,          {.v = voldown } },
+    { 0,                            XF86XK_AudioRaiseVolume,spawn,          {.v = volup } },
+    { 0,                            XF86XK_AudioLowerVolume,spawn,          {.v = voldown } },
     { 0,                            0x1008ff12,spawn,          {.v = volmute } },
     TAGKEYS(                        XK_1,                      0)
     TAGKEYS(                        XK_2,                      1)

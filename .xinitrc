@@ -8,4 +8,5 @@ fi
 xsetroot -name " " &
 feh --no-xinerama --bg-center ~/.wallpapers/LightningColor.png
 ( sleep 3 && conky | dzen2 -xs 1 -x 500 -e '' -fg '#dcdcdc' -bg '#002b36' -ta r -fn '-*-terminus-*-*-*-*-*-*-*-*-*-*-*-*' -p ) & 
-exec ck-launch-session dbus-launch $HOME/dwm/dwm
+xmodmap $HOME/.Xmodmap &
+exec ck-launch-session dbus-launch $HOME/dotfiles/dwm/dwm

@@ -1,5 +1,5 @@
 #Include server settings
-source ~/.muttsecure
+source ~/.mutt/.muttsecure
 
 set editor="/usr/local/bin/vim -c 'set ft=mail et tw=72'"
 
@@ -48,4 +48,4 @@ macro index,pager gl "<change-folder>?" "Go to 'Label'" # will take you to a lis
 auto_view text/html
 
 #source ~/.mutt/zenburn.theme.rc
-source ~/.mutt/mutt-colors-solarized-light-16.muttrc
+source ~/.mutt/mutt-colors-solarized-dark-16.muttrc
