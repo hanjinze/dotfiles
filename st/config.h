@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "ProFont:pixelsize=12";
+static char font[] = "Terminus";
 static int borderpx = 1;
 static char shell[] = "/bin/bash";
 
