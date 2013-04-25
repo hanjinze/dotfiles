@@ -12,7 +12,8 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 12;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
-
+static const unsigned int systrayspacing = 2;   /* systray spacing */                                                                 
+static const Bool showsystray       = True;     /* False means no systray */  
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
@@ -33,6 +34,7 @@ static const Rule rules[] = {
         { "Viewnior", NULL,       NULL,       0,            True,        -1 },
         { "Uzbl-tabbed",    NULL,   NULL,     0,            True,         0 },
         { "Gifview",  NULL,       NULL,       0,            True,        -1 },
+        { "Pidgin",         NULL,   NULL,     0,            True,        -1 },
 };
 
 /* layout(s) */

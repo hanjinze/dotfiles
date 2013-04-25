@@ -1,0 +1,142 @@
+***************
+*** 55,66 ****
+  #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
+  #define TEXTW(X)                (textnw(X, strlen(X)) + dc.font.height)
+  
+  /* enums */
+  enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
+  enum { ColBorder, ColFG, ColBG, ColLast };              /* color */
+- enum { NetSupported, NetWMName, NetWMState,
+-        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
+-        NetWMWindowTypeDialog, NetLast };     /* EWMH atoms */
+  enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
+  enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+         ClkClientWin, ClkRootWin, ClkLast };             /* clicks */
+--- 55,84 ----
+  #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
+  #define TEXTW(X)                (textnw(X, strlen(X)) + dc.font.height)
+  
++ #define SYSTEM_TRAY_REQUEST_DOCK    0
++ #define _NET_SYSTEM_TRAY_ORIENTATION_HORZ 0
++ 
++ /* XEMBED messages */
++ #define XEMBED_EMBEDDED_NOTIFY      0
++ #define XEMBED_WINDOW_ACTIVATE      1
++ #define XEMBED_FOCUS_IN             4
++ #define XEMBED_MODALITY_ON         10
++ 
++ #define XEMBED_MAPPED              (1 << 0)
++ #define XEMBED_WINDOW_ACTIVATE      1
++ #define XEMBED_WINDOW_DEACTIVATE    2
++ 
++ #define VERSION_MAJOR               0
++ #define VERSION_MINOR               0
++ #define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
++ 
+  /* enums */
+  enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
+  enum { ColBorder, ColFG, ColBG, ColLast };              /* color */
++ enum { NetSupported, NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation,
++ 	   NetWMName, NetWMState, NetWMFullscreen, NetActiveWindow, NetWMWindowType,
++ 	   NetWMWindowTypeDialog, NetLast }; /* EWMH atoms */
++ enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
+  enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
+  enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+         ClkClientWin, ClkRootWin, ClkLast };             /* clicks */
+***************
+*** 1555,1561 ****
+  setfocus(Client *c) {
+  	if(!c->neverfocus)
+  		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
+- 	sendevent(c, wmatom[WMTakeFocus]);
+  }
+  
+  void
+--- 1720,1726 ----
+  setfocus(Client *c) {
+  	if(!c->neverfocus)
+  		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
++ 	sendevent(c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
+  }
+  
+  void
+***************
+*** 1635,1645 ****
+  	wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+  	netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
+  	netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
+  	netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
+  	netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
+  	netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
+  	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+  	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+  	/* init cursors */
+  	cursor[CurNormal] = XCreateFontCursor(dpy, XC_left_ptr);
+  	cursor[CurResize] = XCreateFontCursor(dpy, XC_sizing);
+--- 1800,1816 ----
+  	wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+  	netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
+  	netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
++ 	netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
++ 	netatom[NetSystemTrayOP] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
++ 	netatom[NetSystemTrayOrientation] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
+  	netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
+  	netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
+  	netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
+  	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+  	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
++ 	xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
++ 	xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
++ 	xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
+  	/* init cursors */
+  	cursor[CurNormal] = XCreateFontCursor(dpy, XC_left_ptr);
+  	cursor[CurResize] = XCreateFontCursor(dpy, XC_sizing);
+***************
+*** 1850,1867 ****
+  		else
+  			unmanage(c, False);
+  	}
+  }
+  
+  void
+  updatebars(void) {
+  	Monitor *m;
+  	XSetWindowAttributes wa = {
+  		.override_redirect = True,
+  		.background_pixmap = ParentRelative,
+  		.event_mask = ButtonPressMask|ExposureMask
+  	};
+  	for(m = mons; m; m = m->next) {
+- 		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, m->ww, bh, 0, DefaultDepth(dpy, screen),
+  		                          CopyFromParent, DefaultVisual(dpy, screen),
+  		                          CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
+  		XDefineCursor(dpy, m->barwin, cursor[CurNormal]);
+--- 2034,2061 ----
+  		else
+  			unmanage(c, False);
+  	}
++ 	else if((c = wintosystrayicon(ev->window))) {
++ 		removesystrayicon(c);
++ 		resizebarwin(selmon);
++ 		updatesystray();
++ 	}
+  }
+  
+  void
+  updatebars(void) {
++ 	unsigned int w;
+  	Monitor *m;
++ 
+  	XSetWindowAttributes wa = {
+  		.override_redirect = True,
+  		.background_pixmap = ParentRelative,
+  		.event_mask = ButtonPressMask|ExposureMask
+  	};
+  	for(m = mons; m; m = m->next) {
++ 		w = m->ww;
++ 		if(showsystray && m == selmon)
++ 			w -= getsystraywidth();
++ 		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, w, bh, 0, DefaultDepth(dpy, screen),
+  		                          CopyFromParent, DefaultVisual(dpy, screen),
+  		                          CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
+  		XDefineCursor(dpy, m->barwin, cursor[CurNormal]);
